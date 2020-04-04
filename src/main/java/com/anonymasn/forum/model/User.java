@@ -1,15 +1,16 @@
 package com.anonymasn.forum.model;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "users")
 public class User {
@@ -17,17 +18,35 @@ public class User {
   private String id;
 
   @NotBlank
-  @Size(max = 20)
+  @Field(value = "firstName")
+  private String firstName;
+
+  @NotBlank
+  @Field(value = "lastName")
+  private String lastName;
+
+  @NotBlank
+  @Email
+  @Field(value = "email")
+  private String email;
+
+  @Field(value = "phone")
+  private String phone;
+
+  @NotBlank
+  @Field(value = "username")
   private String username;
 
   @NotBlank
-  @Size(max = 50)
-  @Email
-  private String email;
+  @Field(value = "password")
+  private String password;
 
   @NotBlank
-  @Size(max = 120)
-  private String password;
+  @Field(value = "createDate")
+  private Date createDate;
+
+  @Field(value = "status")
+  private int status;
 
   @DBRef
   private Set<Role> roles = new HashSet<>();
@@ -35,10 +54,14 @@ public class User {
   public User() {
   }
 
-  public User(String username, String email, String password) {
+  public User(String firstName, String lastName, String email, String phone, String username, String password) {
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.phone = phone;
     this.username = username;
-    this.email = email;
     this.password = password;
+    this.createDate = new Date();
+    this.status = 0;
   }
 
   public String getId() {
@@ -47,6 +70,30 @@ public class User {
 
   public void setId(String id) {
     this.id = id;
+  }
+
+  public String getFirstName() {
+    return firstName;
+  }
+
+  public void setFirsttName(String lastName) {
+    this.lastName = lastName;
+  }
+
+  public String getLastName() {
+    return lastName;
+  }
+
+  public void setlastName(String lastName) {
+    this.lastName = lastName;
+  }
+
+  public String getPhone() {
+    return phone;
+  }
+
+  public void setPhone(String phone) {
+    this.phone = phone;
   }
 
   public String getUsername() {
@@ -80,4 +127,17 @@ public class User {
   public void setRoles(Set<Role> roles) {
     this.roles = roles;
   }
+
+  public int getStatus() {
+    return this.status;
+  }
+
+  public void setStatus(int status) {
+    this.status = status;
+  }
+
+  @Override
+    public String toString() {
+        return String.format("User[id=%s, firstName='%s', lastName='%s', email='%b']", id, firstName, lastName, email);
+    }
 }

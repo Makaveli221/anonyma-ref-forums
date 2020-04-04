@@ -10,12 +10,15 @@ public class Role {
 
   private ERole name;
 
+  private boolean active;
+
   public Role() {
 
   }
 
-  public Role(ERole name) {
+  public Role(ERole name, boolean active) {
     this.name = name;
+    this.active = active;
   }
 
   public String getId() {
@@ -32,5 +35,13 @@ public class Role {
 
   public void setName(ERole name) {
     this.name = name;
+  }
+
+  public boolean getActive() {
+    return active;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
   }
 }
