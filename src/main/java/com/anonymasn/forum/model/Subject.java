@@ -50,14 +50,14 @@ public class Subject {
 	public Subject() {
 	}
 
-	public Subject(String title, String description, Set<String> keywords, String key, Typesubject typeSubject, User createUser) {
+	public Subject(String title, String description, Set<String> keywords, Typesubject typeSubject,  User createUser, String key, int status) {
 		this.title = title;
 		this.description = description;
 		this.keywords = keywords;
-		this.key = key;
 		this.typeSubject = typeSubject;
 		this.createUser = createUser;
-		this.status = 0;
+		this.key = key;
+		this.status = status;
 		this.createDate = new Date();
 	}
 

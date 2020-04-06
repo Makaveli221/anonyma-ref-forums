@@ -14,4 +14,6 @@ public interface SubjectDao extends MongoRepository<Subject, String> {
     public Optional<Subject> findByTypeSubjectAndTitle(Typesubject typeSubject, String title);
 
     public Optional<Subject> findByTypeSubjectAndTitleAndCreateUser(Typesubject typeSubject, String title, User user);
+
+    public Boolean existsByKey(String key);
 }

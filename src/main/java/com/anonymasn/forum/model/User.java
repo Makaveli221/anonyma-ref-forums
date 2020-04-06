@@ -7,6 +7,8 @@ import java.util.Set;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -38,6 +40,7 @@ public class User {
   private String username;
 
   @NotBlank
+  @JsonIgnore
   @Field(value = "password")
   private String password;
 
@@ -45,9 +48,11 @@ public class User {
   @Field(value = "createDate")
   private Date createDate;
 
+  @JsonIgnore
   @Field(value = "status")
   private int status;
 
+  @JsonIgnore
   @DBRef
   private Set<Role> roles = new HashSet<>();
 
@@ -137,7 +142,7 @@ public class User {
   }
 
   @Override
-    public String toString() {
-        return String.format("User[id=%s, firstName='%s', lastName='%s', email='%b']", id, firstName, lastName, email);
-    }
+  public String toString() {
+    return String.format("User[id=%s, firstName='%s', lastName='%s', email='%b']", id, firstName, lastName, email);
+  }
 }
