@@ -3,6 +3,7 @@ package com.anonymasn.forum.payload.request;
 import java.util.Set;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -25,6 +26,9 @@ public class TopicRequest {
 
 	@NotEmpty(message = "Please enter Subject")
 	private String subject;
+
+	@NotNull
+	private int status;
 
 	public String getTitle() {
 		return this.title;
@@ -72,5 +76,13 @@ public class TopicRequest {
 
 	public void setSubject(String subject) {
 		this.subject = subject;
+	}
+
+	public int getStatus() {
+		return this.status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
 	}
 }

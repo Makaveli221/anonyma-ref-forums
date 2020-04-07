@@ -60,17 +60,16 @@ public class Topic {
 	public Topic() {
 	}
 
-	public Topic(String title, String description, Set<String> keywords, String key, String data, String imgDefault, Set<Appreciation> appreciations, Subject subject, User createUser) {
+	public Topic(String title, String description, Set<String> keywords, String key, String data, String imgDefault, Subject subject, User createUser, int status) {
 		this.title = title;
 		this.description = description;
 		this.keywords = keywords;
 		this.key = key;
 		this.data = data;
 		this.imgDefault = imgDefault;
-		this.appreciations = appreciations;
 		this.subject = subject;
 		this.createUser = createUser;
-		this.status = 0;
+		this.status = status;
 		this.createDate = new Date();
 	}
 

@@ -1,7 +1,6 @@
 package com.anonymasn.forum.service;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.Optional;
 import java.util.Random;
 

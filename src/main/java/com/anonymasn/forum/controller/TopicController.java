@@ -1,10 +1,16 @@
 package com.anonymasn.forum.controller;
 
+import java.util.Collection;
+import java.util.Optional;
+
 import javax.validation.Valid;
 
 import com.anonymasn.forum.model.Topic;
 import com.anonymasn.forum.payload.request.TopicRequest;
+import com.anonymasn.forum.payload.response.MessageResponse;
+import com.anonymasn.forum.service.TopicService;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -23,28 +29,52 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/topic")
 public class TopicController {
 
+	@Autowired
+	TopicService topicService;
+
   @GetMapping("/all")
 	public ResponseEntity<?> AllTopic() {
-    return ResponseEntity.status(HttpStatus.OK).body(new String("Get all Topic."));
+    Collection<Topic> topics = topicService.getAll();
+    return ResponseEntity.status(HttpStatus.OK).body(topics);
+	}
+
+	@GetMapping("/subject/{id}")
+	public ResponseEntity<?> AllTopicBySubject(@PathVariable(value = "id") String id) {
+		Collection<Topic> topics = topicService.findBySubject(id);
+		return ResponseEntity.status(HttpStatus.OK).body(topics);
 	}
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<?> singleTopic(@PathVariable(value = "id") String id) {
-		return ResponseEntity.status(HttpStatus.OK).body(new String("Get Topic by id."));
+		Optional<Topic> topic = topicService.findById(id);
+		return ResponseEntity.status(HttpStatus.OK).body(topic);
 	}
 
 	@PostMapping("/add")
 	public ResponseEntity<?> addTopic(@Valid @RequestBody TopicRequest topRequest) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(new String("Add new Topic"));
+		Topic newTopic = topicService.create(topRequest);
+		if (newTopic == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Error: Topic not found"));
+		}
+		return ResponseEntity.status(HttpStatus.CREATED).body(newTopic);
 	}
 
 	@PutMapping("/update/{id}")
-	public ResponseEntity<?> updateTopic(@PathVariable(value = "id") String id, @Valid @RequestBody Topic top) {
-		return ResponseEntity.status(HttpStatus.OK).body(new String("Update Topic"));
+	public ResponseEntity<?> updateTopic(@PathVariable(value = "id") String id, @Valid @RequestBody TopicRequest topRequest) {
+		Topic updateTopic = topicService.update(id, topRequest);
+		if (updateTopic == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Error: Subject or Topic not found"));
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(updateTopic);
 	}
 
 	@DeleteMapping("delete/{id}")
 	public ResponseEntity<?> deleteTopic(@PathVariable(value = "id") String id) {
-		return ResponseEntity.status(HttpStatus.OK).body(new String("Delete Topic"));
+		Optional<Topic> currTopic = topicService.findById(id);
+		if (!currTopic.isPresent()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Error: Topic not found or already deleted."));
+		}
+		topicService.delete(id);
+		return ResponseEntity.status(HttpStatus.OK).body(new MessageResponse("Topic is successfully deleted"));
 	}
 }

@@ -9,7 +9,7 @@ import com.anonymasn.forum.model.Subject;
 import com.anonymasn.forum.model.Typesubject;
 
 import com.anonymasn.forum.payload.request.SubjectRequest;
-
+import com.anonymasn.forum.payload.response.MessageResponse;
 import com.anonymasn.forum.service.SubjectService;
 import com.anonymasn.forum.service.TypesubjectService;
 
@@ -63,8 +63,7 @@ public class SubjectController {
 	@PostMapping("/type/add")
 	public ResponseEntity<?> addTypeSubject(@Valid @RequestBody Typesubject typeSub) {
 		if (typeSubjectService.existsByName(typeSub.getName())) {
-			return ResponseEntity.status(HttpStatus.CONFLICT)
-				.body("Type subject already exist.");
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageResponse("Error: Type subject already exist."));
 		}
 		
 		logger.debug("Creating a type Subject.");
@@ -97,7 +96,7 @@ public class SubjectController {
 		}
 		
 		typeSubjectService.delete(id);
-		return ResponseEntity.status(HttpStatus.OK).body("Type subject delete successfully");
+		return ResponseEntity.status(HttpStatus.OK).body(new MessageResponse("Type subject delete successfully"));
 	}
 
   @GetMapping("/all")
@@ -117,26 +116,20 @@ public class SubjectController {
 
 	@PostMapping("/add")
 	public ResponseEntity<?> addSubject(@Valid @RequestBody SubjectRequest subRequest) {
-		logger.debug("Get type subject for update.");		
-
 		Subject newSubject = subjectService.create(subRequest);
-
 		if (newSubject == null) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Type subject not found");
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Error: Subject not found"));
 		}
-
 		return ResponseEntity.status(HttpStatus.CREATED).body(newSubject);
 	}
 
 	@PutMapping("/update/{id}")
 	public ResponseEntity<?> updateSubject(@PathVariable(value = "id") String id, @Valid @RequestBody SubjectRequest subRequest) {
 		logger.debug("Get subject for update.");
-		
 		Subject updateSub = subjectService.update(id, subRequest);
 		if (updateSub == null) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Subject or Type Subject not found");
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Error: Subject or Type Subject not found"));
 		}
-
 		logger.debug("Updating Subject.");
 		return ResponseEntity.status(HttpStatus.OK).body(updateSub);
 	}
@@ -146,10 +139,9 @@ public class SubjectController {
 		logger.debug("Get Subject for delete.");
 		Optional<Subject> currSub = subjectService.findById(id);
 		if (!currSub.isPresent()) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Subject not found");
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Error: Subject not found"));
 		}
-		
 		subjectService.delete(id);
-		return ResponseEntity.status(HttpStatus.OK).body("Subject delete successfully");
+		return ResponseEntity.status(HttpStatus.OK).body(new MessageResponse("Subject delete successfully"));
 	}
 }
