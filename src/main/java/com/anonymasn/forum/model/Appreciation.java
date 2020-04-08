@@ -1,5 +1,6 @@
 package com.anonymasn.forum.model;
 
+import java.util.Date;
 import java.util.Objects;
 
 public class Appreciation {
@@ -7,6 +8,7 @@ public class Appreciation {
     private int numero;
     private User user;
     private boolean liked;
+    private Date createDate;
 
     public Appreciation() {
     }
@@ -52,5 +54,13 @@ public class Appreciation {
 
     public void setLiked(boolean liked) {
         this.liked = liked;
+    }
+
+    public Date getCreateDate() {
+        return this.createDate;
+    }
+
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
     }
 }

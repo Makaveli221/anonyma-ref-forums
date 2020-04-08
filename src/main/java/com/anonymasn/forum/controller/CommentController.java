@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/api/comment")
+@RequestMapping("/comment")
 public class CommentController {
 
 	@GetMapping("/all")

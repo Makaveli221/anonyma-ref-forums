@@ -6,13 +6,15 @@ import java.util.Optional;
 import com.anonymasn.forum.model.Topic;
 import com.anonymasn.forum.payload.request.TopicRequest;
 
+import org.springframework.data.domain.Page;
+
 public interface TopicService {
 
   public Topic create(TopicRequest subRequest);
 
   public Collection<Topic> getAll();
 
-  public Collection<Topic> findBySubject(String id);
+  public Page<Topic> findBySubject(String id,int page, int limit);
 
   public Optional<Topic> findById(String id);
 

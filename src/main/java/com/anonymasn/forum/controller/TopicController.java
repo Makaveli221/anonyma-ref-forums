@@ -1,6 +1,7 @@
 package com.anonymasn.forum.controller;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.validation.Valid;
@@ -11,6 +12,7 @@ import com.anonymasn.forum.payload.response.MessageResponse;
 import com.anonymasn.forum.service.TopicService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -22,11 +24,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/api/topic")
+@RequestMapping("/topic")
 public class TopicController {
 
 	@Autowired
@@ -39,8 +42,16 @@ public class TopicController {
 	}
 
 	@GetMapping("/subject/{id}")
-	public ResponseEntity<?> AllTopicBySubject(@PathVariable(value = "id") String id) {
-		Collection<Topic> topics = topicService.findBySubject(id);
+	public ResponseEntity<?> AllTopicBySubject(@PathVariable(value = "id") String id, @RequestParam Map<String, String> customQuery) {
+		int page = 0;
+		int limit = 20;
+		if(customQuery.containsKey("page")) {
+			page = Integer.parseInt(customQuery.get("page"));
+		}
+		if(customQuery.containsKey("limit")) {
+			limit = Integer.parseInt(customQuery.get("limit"));
+		}
+		Page<Topic> topics = topicService.findBySubject(id, page, limit);
 		return ResponseEntity.status(HttpStatus.OK).body(topics);
 	}
 	

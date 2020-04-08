@@ -15,6 +15,13 @@ import com.anonymasn.forum.payload.request.TopicRequest;
 import com.anonymasn.forum.security.services.UserDetailsImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.repository.support.PageableExecutionUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +36,9 @@ public class TopicServiceImpl implements TopicService {
 
   @Autowired
   UserDao userDao;
+
+  @Autowired
+  MongoTemplate mongoTemplate;
 
   @Override
   public Topic create(TopicRequest subRequest) {
@@ -64,13 +74,25 @@ public class TopicServiceImpl implements TopicService {
   }
 
   @Override
-  public Collection<Topic>  findBySubject(String id) {
+  public Page<Topic> findBySubject(String id,int page, int limit) {
     Optional<Subject> subject = subjectDao.findById(id);
-
     if (!subject.isPresent()) {
 			return null;
     }
-    return topicDao.findBySubject(subject.get());
+
+    final Pageable pageable = PageRequest.of(page, limit);
+    Query query = new Query().with(pageable);
+    query.addCriteria(Criteria.where("subject").is(subject.get()));
+
+    List <Topic> filteredTopics = mongoTemplate.find(query, Topic.class);
+
+    Page<Topic> topicPage = PageableExecutionUtils.getPage(
+      filteredTopics,
+      pageable,
+      () -> mongoTemplate.count(query, Topic.class)
+    );
+
+    return topicPage;
   }
 
   @Override
