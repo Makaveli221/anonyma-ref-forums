@@ -5,31 +5,32 @@ import java.util.Set;
 import javax.validation.constraints.*;
  
 public class SignupRequest {
-	@NotBlank
+	@NotEmpty(message = "Please enter firstName")
 	@Size(min = 3, max = 150)
 	private String firstName;
 
-	@NotBlank
+	@NotEmpty(message = "Please enter lastName")
 	@Size(min = 3, max = 100)
 	private String lastName;
 
-	@Size(max = 20)
-  private String phone;
-
-	@NotBlank
-	@Size(min = 3, max = 20)
-	private String username;
-
-	@NotBlank
+	@NotEmpty(message = "Please enter email")
 	@Size(max = 50)
 	@Email
 	private String email;
+
+	@Size(max = 20)
+  	private String phone;
+
+	@NotEmpty(message = "Please enter username")
+	@Size(min = 3, max = 20)
+	private String username;
 	
-	private Set<String> roles;
-	
-	@NotBlank
+	@NotEmpty(message = "Please enter password")
 	@Size(min = 6, max = 40)
 	private String password;
+
+	@NotEmpty(message = "Please enter roles")
+	private Set<String> roles;
 
 	public String getFirstName() {
 		return firstName;
