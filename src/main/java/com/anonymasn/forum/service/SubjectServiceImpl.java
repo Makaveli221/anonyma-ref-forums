@@ -17,6 +17,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Order;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
+
+
 @Service
 public class SubjectServiceImpl implements SubjectService {
 
@@ -54,8 +60,8 @@ public class SubjectServiceImpl implements SubjectService {
   }
 
   @Override
-  public Collection<Subject> getAll() {
-    return subjectDao.findAll();
+  public Page<Subject> getAll(final int page, final int size) {
+    return subjectDao.findAll(PageRequest.of(page, size, Sort.by(Order.desc("id"))));
   }
 
   @Override

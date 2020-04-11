@@ -1,5 +1,6 @@
 package com.anonymasn.forum.controller;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -12,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -105,15 +108,25 @@ public class AuthController {
 				.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
 			roles.add(userRole);
 		} else {
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+			Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+			boolean authorized = authorities.contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
+
 			strRoles.forEach(role -> {
 				switch (role) {
 				case "admin":
+					if (!authentication.isAuthenticated() || !authorized) {
+						throw new RuntimeException("Access denied to create a user with Role Admin.");
+					}
 					Role adminRole = roleDao.findByName(ERole.ROLE_ADMIN)
 						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
 					roles.add(adminRole);
 
 					break;
 				case "mod":
+					if (!authentication.isAuthenticated() || !authorized) {
+						throw new RuntimeException("Access denied to create a user with Role Moderator.");
+					}
 					Role modRole = roleDao.findByName(ERole.ROLE_MODERATOR)
 						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
 					roles.add(modRole);

@@ -1,6 +1,5 @@
 package com.anonymasn.forum.service;
 
-import java.util.Collection;
 import java.util.Optional;
 
 import com.anonymasn.forum.model.Topic;
@@ -12,7 +11,7 @@ public interface TopicService {
 
   public Topic create(TopicRequest subRequest);
 
-  public Collection<Topic> getAll();
+  public Iterable<Topic> getAll();
 
   public Page<Topic> findBySubject(String id,int page, int limit);
 

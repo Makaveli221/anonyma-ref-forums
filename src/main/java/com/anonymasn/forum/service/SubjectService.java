@@ -1,16 +1,17 @@
 package com.anonymasn.forum.service;
 
-import java.util.Collection;
 import java.util.Optional;
 
 import com.anonymasn.forum.model.Subject;
 import com.anonymasn.forum.payload.request.SubjectRequest;
 
+import org.springframework.data.domain.Page;
+
 public interface SubjectService {
 
   public Subject create(SubjectRequest subRequest);
 
-  public Collection<Subject> getAll();
+  public Page<Subject> getAll(final int page, final int size);
 
   public Optional<Subject> findById(String id);
 

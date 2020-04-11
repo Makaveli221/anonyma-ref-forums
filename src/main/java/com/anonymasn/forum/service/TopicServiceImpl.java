@@ -1,7 +1,5 @@
 package com.anonymasn.forum.service;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
@@ -18,10 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.repository.support.PageableExecutionUtils;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -37,15 +33,12 @@ public class TopicServiceImpl implements TopicService {
   @Autowired
   UserDao userDao;
 
-  @Autowired
-  MongoTemplate mongoTemplate;
-
   @Override
-  public Topic create(TopicRequest subRequest) {
-    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    Optional<User> createUser = userDao.findById(userDetails.getId());
+  public Topic create(final TopicRequest subRequest) {
+    final UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    final Optional<User> createUser = userDao.findById(userDetails.getId());
 
-    Optional<Subject> subject = subjectDao.findById(subRequest.getSubject());
+    final Optional<Subject> subject = subjectDao.findById(subRequest.getSubject());
 
     if (!subject.isPresent()) {
 			return null;
@@ -53,7 +46,7 @@ public class TopicServiceImpl implements TopicService {
     
     // subRequest.getImgDefault();
 
-    Topic Topic = new Topic(
+    final Topic Topic = new Topic(
       subRequest.getTitle(),
       subRequest.getDescription(),
       subRequest.getKeywords(),
@@ -69,47 +62,35 @@ public class TopicServiceImpl implements TopicService {
   }
 
   @Override
-  public Collection<Topic> getAll() {
+  public Iterable<Topic> getAll() {
     return topicDao.findAll();
   }
 
   @Override
-  public Page<Topic> findBySubject(String id,int page, int limit) {
-    Optional<Subject> subject = subjectDao.findById(id);
+  public Page<Topic> findBySubject(final String key,final int page, final int size) {
+    final Optional<Subject> subject = subjectDao.findByKey(key);
     if (!subject.isPresent()) {
 			return null;
     }
-
-    final Pageable pageable = PageRequest.of(page, limit);
-    Query query = new Query().with(pageable);
-    query.addCriteria(Criteria.where("subject").is(subject.get()));
-
-    List <Topic> filteredTopics = mongoTemplate.find(query, Topic.class);
-
-    Page<Topic> topicPage = PageableExecutionUtils.getPage(
-      filteredTopics,
-      pageable,
-      () -> mongoTemplate.count(query, Topic.class)
-    );
-
-    return topicPage;
+    final Pageable pageable = PageRequest.of(page, size, Sort.by(Order.desc("id")));
+    return topicDao.findBySubject(subject.get(), pageable);
   }
 
   @Override
-  public Optional<Topic> findById(String id) {
+  public Optional<Topic> findById(final String id) {
     return topicDao.findById(id);
   }
 
   @Override
-  public Topic update(String id, TopicRequest subRequest) {
-    Optional<Topic> currTopic = topicDao.findById(id);
-    Optional<Subject> subject = subjectDao.findById(subRequest.getSubject());
+  public Topic update(final String id, final TopicRequest subRequest) {
+    final Optional<Topic> currTopic = topicDao.findById(id);
+    final Optional<Subject> subject = subjectDao.findById(subRequest.getSubject());
 
     if (!currTopic.isPresent() || !subject.isPresent()) {
 			return null;
 		}
 
-    Topic topic = currTopic.get();
+    final Topic topic = currTopic.get();
     topic.setTitle(subRequest.getTitle());
     topic.setDescription(subRequest.getDescription());
     topic.setKeywords(subRequest.getKeywords());
@@ -120,14 +101,14 @@ public class TopicServiceImpl implements TopicService {
   }
 
   @Override
-  public void delete(String id) {
+  public void delete(final String id) {
     topicDao.deleteById(id);
   }
 
   @Override
-  public String generateKey(String title) {
+  public String generateKey(final String title) {
     String key = title.replaceAll("[^a-zA-Z0-9 ]+", "").replaceAll("\\s", "-").toLowerCase();
-    Random rand = new Random();
+    final Random rand = new Random();
     while (topicDao.existsByKey(key)) {
       key += rand.nextInt(100000);
     }

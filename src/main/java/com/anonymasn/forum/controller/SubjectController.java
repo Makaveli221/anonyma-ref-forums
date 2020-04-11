@@ -1,6 +1,7 @@
 package com.anonymasn.forum.controller;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.validation.Valid;
@@ -14,6 +15,7 @@ import com.anonymasn.forum.service.SubjectService;
 import com.anonymasn.forum.service.TypesubjectService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import org.slf4j.Logger;
@@ -33,7 +36,6 @@ import org.slf4j.LoggerFactory;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/subject")
-@PreAuthorize("hasRole('ADMIN')")
 public class SubjectController {
 
 	@Autowired
@@ -45,6 +47,7 @@ public class SubjectController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@GetMapping("/type/all")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN') or hasRole('COACH')")
 	public ResponseEntity<?> AllTypeSubject() {
 		Collection<Typesubject> typeSubjects = typeSubjectService.getAll();
 		logger.debug("Get all Subject.");
@@ -53,6 +56,7 @@ public class SubjectController {
 	}
 
 	@GetMapping("/type/{id}")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN') or hasRole('COACH')")
 	public ResponseEntity<?> getTypeSubjectById(@PathVariable(value = "id") String id) {
 		Optional<Typesubject> typeSubject = typeSubjectService.findById(id);
 		logger.debug("Get TypeSubject by id.");
@@ -61,6 +65,7 @@ public class SubjectController {
 	}
 
 	@PostMapping("/type/add")
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> addTypeSubject(@Valid @RequestBody Typesubject typeSub) {
 		if (typeSubjectService.existsByName(typeSub.getName())) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageResponse("Error: Type subject already exist."));
@@ -73,6 +78,7 @@ public class SubjectController {
 	}
 
 	@PutMapping("/type/update/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> updateTypeSubject(@PathVariable(value = "id") String id, @Valid @RequestBody Typesubject typeSub) {
 		logger.debug("Getting a type subject for update.");
 		Optional<Typesubject> currTypeSub = typeSubjectService.findById(id);
@@ -88,6 +94,7 @@ public class SubjectController {
 	}
 
 	@DeleteMapping("/type/delete/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> deleteTypeSubject(@PathVariable(value = "id") String id) {
 		logger.debug("Getting a type subject for delete.");
 		Optional<Typesubject> currTypeSub = typeSubjectService.findById(id);
@@ -99,14 +106,24 @@ public class SubjectController {
 		return ResponseEntity.status(HttpStatus.OK).body(new MessageResponse("Type subject delete successfully"));
 	}
 
-  @GetMapping("/all")
-	public ResponseEntity<?> AllSubject() {
-		Collection<Subject> subjects = subjectService.getAll();
+	@GetMapping("/all")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN') or hasRole('COACH')")
+	public ResponseEntity<?> AllSubject(@RequestParam Map<String, String> customQuery) {
+		int page = 0;
+		int size = 20;
+		if(customQuery.containsKey("page")) {
+			page = Integer.parseInt(customQuery.get("page"));
+		}
+		if(customQuery.containsKey("limit")) {
+			size = Integer.parseInt(customQuery.get("limit"));
+		}
+		Page<Subject> subjects = subjectService.getAll(page, size);
 		logger.debug("Get all Subjects.");
     return ResponseEntity.status(HttpStatus.OK).body(subjects);
 	}
 
 	@GetMapping("/{id}")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN') or hasRole('COACH')")
 	public ResponseEntity<?> singleSubject(@PathVariable(value = "id") String id) {
 		Optional<Subject> subject = subjectService.findById(id);
 		logger.debug("Get Subject by id.");
@@ -115,6 +132,7 @@ public class SubjectController {
 	}
 
 	@PostMapping("/add")
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> addSubject(@Valid @RequestBody SubjectRequest subRequest) {
 		Subject newSubject = subjectService.create(subRequest);
 		if (newSubject == null) {
@@ -124,6 +142,7 @@ public class SubjectController {
 	}
 
 	@PutMapping("/update/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> updateSubject(@PathVariable(value = "id") String id, @Valid @RequestBody SubjectRequest subRequest) {
 		logger.debug("Get subject for update.");
 		Subject updateSub = subjectService.update(id, subRequest);
@@ -135,6 +154,7 @@ public class SubjectController {
 	}
 
 	@DeleteMapping("delete/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> deleteSubject(@PathVariable(value = "id") String id) {
 		logger.debug("Get Subject for delete.");
 		Optional<Subject> currSub = subjectService.findById(id);

@@ -1,6 +1,5 @@
 package com.anonymasn.forum.controller;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
@@ -16,6 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,19 +31,20 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/topic")
+@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN') or hasRole('COACH')")
 public class TopicController {
 
 	@Autowired
 	TopicService topicService;
 
-  @GetMapping("/all")
+  	@GetMapping("/all")
 	public ResponseEntity<?> AllTopic() {
-    Collection<Topic> topics = topicService.getAll();
+    Iterable<Topic> topics = topicService.getAll();
     return ResponseEntity.status(HttpStatus.OK).body(topics);
 	}
 
-	@GetMapping("/subject/{id}")
-	public ResponseEntity<?> AllTopicBySubject(@PathVariable(value = "id") String id, @RequestParam Map<String, String> customQuery) {
+	@GetMapping("/subject/{key}")
+	public ResponseEntity<?> AllTopicBySubject(@PathVariable(value = "key") String key, @RequestParam Map<String, String> customQuery) {
 		int page = 0;
 		int limit = 20;
 		if(customQuery.containsKey("page")) {
@@ -51,7 +53,7 @@ public class TopicController {
 		if(customQuery.containsKey("limit")) {
 			limit = Integer.parseInt(customQuery.get("limit"));
 		}
-		Page<Topic> topics = topicService.findBySubject(id, page, limit);
+		Page<Topic> topics = topicService.findBySubject(key, page, limit);
 		return ResponseEntity.status(HttpStatus.OK).body(topics);
 	}
 	
