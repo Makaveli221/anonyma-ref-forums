@@ -47,7 +47,6 @@ public class SubjectController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@GetMapping("/type/all")
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN') or hasRole('COACH')")
 	public ResponseEntity<?> AllTypeSubject() {
 		Collection<Typesubject> typeSubjects = typeSubjectService.getAll();
 		logger.debug("Get all Subject.");
@@ -56,7 +55,6 @@ public class SubjectController {
 	}
 
 	@GetMapping("/type/{id}")
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN') or hasRole('COACH')")
 	public ResponseEntity<?> getTypeSubjectById(@PathVariable(value = "id") String id) {
 		Optional<Typesubject> typeSubject = typeSubjectService.findById(id);
 		logger.debug("Get TypeSubject by id.");
@@ -107,7 +105,6 @@ public class SubjectController {
 	}
 
 	@GetMapping("/all")
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN') or hasRole('COACH')")
 	public ResponseEntity<?> AllSubject(@RequestParam Map<String, String> customQuery) {
 		int page = 0;
 		int size = 20;
@@ -123,7 +120,6 @@ public class SubjectController {
 	}
 
 	@GetMapping("/{id}")
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN') or hasRole('COACH')")
 	public ResponseEntity<?> singleSubject(@PathVariable(value = "id") String id) {
 		Optional<Subject> subject = subjectService.findById(id);
 		logger.debug("Get Subject by id.");

@@ -31,7 +31,6 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/topic")
-@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN') or hasRole('COACH')")
 public class TopicController {
 
 	@Autowired
@@ -64,6 +63,7 @@ public class TopicController {
 	}
 
 	@PostMapping("/add")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN') or hasRole('COACH')")
 	public ResponseEntity<?> addTopic(@Valid @RequestBody TopicRequest topRequest) {
 		Topic newTopic = topicService.create(topRequest);
 		if (newTopic == null) {
@@ -73,6 +73,7 @@ public class TopicController {
 	}
 
 	@PutMapping("/update/{id}")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN') or hasRole('COACH')")
 	public ResponseEntity<?> updateTopic(@PathVariable(value = "id") String id, @Valid @RequestBody TopicRequest topRequest) {
 		Topic updateTopic = topicService.update(id, topRequest);
 		if (updateTopic == null) {
@@ -82,6 +83,7 @@ public class TopicController {
 	}
 
 	@DeleteMapping("delete/{id}")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN') or hasRole('COACH')")
 	public ResponseEntity<?> deleteTopic(@PathVariable(value = "id") String id) {
 		Optional<Topic> currTopic = topicService.findById(id);
 		if (!currTopic.isPresent()) {
