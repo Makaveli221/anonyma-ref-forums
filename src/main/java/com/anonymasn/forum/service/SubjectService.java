@@ -13,7 +13,7 @@ public interface SubjectService {
 
   public Page<Subject> getAll(final int page, final int size);
 
-  public Optional<Subject> findById(String id);
+  public Optional<Subject> findByKey(String key);
 
   public Subject update(String id, SubjectRequest subRequest);
 

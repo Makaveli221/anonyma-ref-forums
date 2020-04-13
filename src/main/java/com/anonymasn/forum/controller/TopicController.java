@@ -56,9 +56,9 @@ public class TopicController {
 		return ResponseEntity.status(HttpStatus.OK).body(topics);
 	}
 	
-	@GetMapping("/{id}")
-	public ResponseEntity<?> singleTopic(@PathVariable(value = "id") String id) {
-		Optional<Topic> topic = topicService.findById(id);
+	@GetMapping("/{key}")
+	public ResponseEntity<?> singleTopic(@PathVariable(value = "key") String key) {
+		Optional<Topic> topic = topicService.findByKey(key);
 		return ResponseEntity.status(HttpStatus.OK).body(topic);
 	}
 
@@ -72,24 +72,24 @@ public class TopicController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(newTopic);
 	}
 
-	@PutMapping("/update/{id}")
+	@PutMapping("/update/{key}")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN') or hasRole('COACH')")
-	public ResponseEntity<?> updateTopic(@PathVariable(value = "id") String id, @Valid @RequestBody TopicRequest topRequest) {
-		Topic updateTopic = topicService.update(id, topRequest);
+	public ResponseEntity<?> updateTopic(@PathVariable(value = "key") String key, @Valid @RequestBody TopicRequest topRequest) {
+		Topic updateTopic = topicService.update(key, topRequest);
 		if (updateTopic == null) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Error: Subject or Topic not found"));
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(updateTopic);
 	}
 
-	@DeleteMapping("delete/{id}")
+	@DeleteMapping("delete/{key}")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN') or hasRole('COACH')")
-	public ResponseEntity<?> deleteTopic(@PathVariable(value = "id") String id) {
-		Optional<Topic> currTopic = topicService.findById(id);
+	public ResponseEntity<?> deleteTopic(@PathVariable(value = "key") String key) {
+		Optional<Topic> currTopic = topicService.findByKey(key);
 		if (!currTopic.isPresent()) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Error: Topic not found or already deleted."));
 		}
-		topicService.delete(id);
+		topicService.delete(currTopic.get().getId());
 		return ResponseEntity.status(HttpStatus.OK).body(new MessageResponse("Topic is successfully deleted"));
 	}
 }

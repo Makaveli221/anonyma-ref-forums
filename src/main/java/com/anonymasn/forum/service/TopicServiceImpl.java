@@ -77,13 +77,13 @@ public class TopicServiceImpl implements TopicService {
   }
 
   @Override
-  public Optional<Topic> findById(final String id) {
-    return topicDao.findById(id);
+  public Optional<Topic> findByKey(final String key) {
+    return topicDao.findByKey(key);
   }
 
   @Override
-  public Topic update(final String id, final TopicRequest subRequest) {
-    final Optional<Topic> currTopic = topicDao.findById(id);
+  public Topic update(final String key, final TopicRequest subRequest) {
+    final Optional<Topic> currTopic = topicDao.findByKey(key);
     final Optional<Subject> subject = subjectDao.findById(subRequest.getSubject());
 
     if (!currTopic.isPresent() || !subject.isPresent()) {

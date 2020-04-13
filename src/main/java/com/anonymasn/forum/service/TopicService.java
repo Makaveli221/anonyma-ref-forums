@@ -15,7 +15,7 @@ public interface TopicService {
 
   public Page<Topic> findBySubject(String id,int page, int limit);
 
-  public Optional<Topic> findById(String id);
+  public Optional<Topic> findByKey(String id);
 
   public Topic update(String id, TopicRequest subRequest);
 

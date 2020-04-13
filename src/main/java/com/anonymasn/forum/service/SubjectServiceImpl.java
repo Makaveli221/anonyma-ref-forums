@@ -65,13 +65,13 @@ public class SubjectServiceImpl implements SubjectService {
   }
 
   @Override
-  public Optional<Subject> findById(String id) {
-    return subjectDao.findById(id);
+  public Optional<Subject> findByKey(String key) {
+    return subjectDao.findByKey(key);
   }
 
   @Override
-  public Subject update(String id, SubjectRequest subRequest) {
-    Optional<Subject> currSub = subjectDao.findById(id);
+  public Subject update(String key, SubjectRequest subRequest) {
+    Optional<Subject> currSub = subjectDao.findByKey(key);
     Optional<Typesubject> typeSub = typeSubjectDao.findById(subRequest.getTypeSubject());
 
     if (!currSub.isPresent() || !typeSub.isPresent()) {

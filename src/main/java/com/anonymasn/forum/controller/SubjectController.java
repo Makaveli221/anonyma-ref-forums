@@ -119,10 +119,10 @@ public class SubjectController {
     return ResponseEntity.status(HttpStatus.OK).body(subjects);
 	}
 
-	@GetMapping("/{id}")
-	public ResponseEntity<?> singleSubject(@PathVariable(value = "id") String id) {
-		Optional<Subject> subject = subjectService.findById(id);
-		logger.debug("Get Subject by id.");
+	@GetMapping("/{key}")
+	public ResponseEntity<?> singleSubject(@PathVariable(value = "key") String key) {
+		Optional<Subject> subject = subjectService.findByKey(key);
+		logger.debug("Get Subject by key.");
 		
 		return ResponseEntity.status(HttpStatus.OK).body(subject);
 	}
@@ -137,11 +137,11 @@ public class SubjectController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(newSubject);
 	}
 
-	@PutMapping("/update/{id}")
+	@PutMapping("/update/{key}")
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<?> updateSubject(@PathVariable(value = "id") String id, @Valid @RequestBody SubjectRequest subRequest) {
+	public ResponseEntity<?> updateSubject(@PathVariable(value = "key") String key, @Valid @RequestBody SubjectRequest subRequest) {
 		logger.debug("Get subject for update.");
-		Subject updateSub = subjectService.update(id, subRequest);
+		Subject updateSub = subjectService.update(key, subRequest);
 		if (updateSub == null) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Error: Subject or Type Subject not found"));
 		}
@@ -149,15 +149,15 @@ public class SubjectController {
 		return ResponseEntity.status(HttpStatus.OK).body(updateSub);
 	}
 
-	@DeleteMapping("delete/{id}")
+	@DeleteMapping("delete/{key}")
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<?> deleteSubject(@PathVariable(value = "id") String id) {
+	public ResponseEntity<?> deleteSubject(@PathVariable(value = "key") String key) {
 		logger.debug("Get Subject for delete.");
-		Optional<Subject> currSub = subjectService.findById(id);
+		Optional<Subject> currSub = subjectService.findByKey(key);
 		if (!currSub.isPresent()) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Error: Subject not found"));
 		}
-		subjectService.delete(id);
+		subjectService.delete(currSub.get().getId());
 		return ResponseEntity.status(HttpStatus.OK).body(new MessageResponse("Subject delete successfully"));
 	}
 }
