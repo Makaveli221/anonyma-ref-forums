@@ -17,6 +17,8 @@ public interface TopicDao extends PagingAndSortingRepository<Topic, String> {
     public Optional<Topic> findByKey(String key);
 
     public Page<Topic> findBySubject(Subject subject, Pageable pageable);
+
+    public Page<Topic> findByCreateUser(User user, Pageable pageable);
     
     public Collection<Topic> findBySubjectAndTitle(Subject subject, String title);
 

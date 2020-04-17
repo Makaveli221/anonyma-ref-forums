@@ -77,6 +77,16 @@ public class TopicServiceImpl implements TopicService {
   }
 
   @Override
+  public Page<Topic> findByCreateUser(final String id,final int page, final int size) {
+    final Optional<User> createUser = userDao.findById(id);
+    if (!createUser.isPresent()) {
+			return null;
+    }
+    final Pageable pageable = PageRequest.of(page, size, Sort.by(Order.desc("id")));
+    return topicDao.findByCreateUser(createUser.get(), pageable);
+  }
+
+  @Override
   public Optional<Topic> findByKey(final String key) {
     return topicDao.findByKey(key);
   }

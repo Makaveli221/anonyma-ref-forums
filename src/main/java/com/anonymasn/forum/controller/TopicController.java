@@ -55,6 +55,20 @@ public class TopicController {
 		Page<Topic> topics = topicService.findBySubject(key, page, limit);
 		return ResponseEntity.status(HttpStatus.OK).body(topics);
 	}
+
+	@GetMapping("/createuser/{id}")
+	public ResponseEntity<?> AllTopicByCreateUser(@PathVariable(value = "id") String id, @RequestParam Map<String, String> customQuery) {
+		int page = 0;
+		int limit = 20;
+		if(customQuery.containsKey("page")) {
+			page = Integer.parseInt(customQuery.get("page"));
+		}
+		if(customQuery.containsKey("limit")) {
+			limit = Integer.parseInt(customQuery.get("limit"));
+		}
+		Page<Topic> topics = topicService.findByCreateUser(id, page, limit);
+		return ResponseEntity.status(HttpStatus.OK).body(topics);
+	}
 	
 	@GetMapping("/{key}")
 	public ResponseEntity<?> singleTopic(@PathVariable(value = "key") String key) {
