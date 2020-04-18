@@ -42,7 +42,7 @@ public class TopicServiceImpl implements TopicService {
   UserDao userDao;
 
   @Override
-  public Topic create(final TopicRequest subRequest, MultipartFile file) {
+  public Topic create(final TopicRequest subRequest, Optional<MultipartFile> file) {
     final UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     final Optional<User> createUser = userDao.findById(userDetails.getId());
 
@@ -54,8 +54,8 @@ public class TopicServiceImpl implements TopicService {
 
     String imgDefault = null;
 
-    if(!file.isEmpty()) {
-      imgDefault = uploadFile(file);
+    if(file.isPresent()) {
+      imgDefault = uploadFile(file.get());
     }
 
     final Topic Topic = new Topic(
@@ -108,7 +108,7 @@ public class TopicServiceImpl implements TopicService {
   }
 
   @Override
-  public Topic update(final String key, final TopicRequest subRequest) {
+  public Topic update(final String key, final TopicRequest subRequest, Optional<MultipartFile> file) {
     final Optional<Topic> currTopic = topicDao.findByKey(key);
     final Optional<Subject> subject = subjectDao.findById(subRequest.getSubject());
 
@@ -121,7 +121,11 @@ public class TopicServiceImpl implements TopicService {
     topic.setDescription(subRequest.getDescription());
     topic.setKeywords(subRequest.getKeywords());
     topic.setSubject(subject.get());
+    topic.setData(subRequest.getData());
     topic.setStatus(subRequest.getStatus());
+    if(file.isPresent()) {
+      topic.setImgDefault(uploadFile(file.get()));
+    }
     topicDao.save(topic);
     return topic;
   }

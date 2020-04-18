@@ -82,12 +82,12 @@ public class TopicController {
 
 	@PostMapping("/add")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN') or hasRole('COACH')")
-	public ResponseEntity<?> addTopic(@RequestParam("uploadFile") MultipartFile file, @Valid @RequestParam("info") String info)
+	public ResponseEntity<?> addTopic(@RequestParam(value = "uploadFile", required = false) Optional<MultipartFile> file, @Valid @RequestParam("info") String info)
 	throws JsonParseException, JsonMappingException, IOException
 	{
 		ObjectMapper objectMapper = new ObjectMapper();
 		TopicRequest topRequest = objectMapper.readValue(info, TopicRequest.class);
-
+		
 		Topic newTopic = topicService.create(topRequest, file);
 		if (newTopic == null) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Error: Topic not found"));
@@ -97,8 +97,13 @@ public class TopicController {
 
 	@PutMapping("/update/{key}")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN') or hasRole('COACH')")
-	public ResponseEntity<?> updateTopic(@PathVariable(value = "key") String key, @Valid @RequestBody TopicRequest topRequest) {
-		Topic updateTopic = topicService.update(key, topRequest);
+	public ResponseEntity<?> updateTopic(@PathVariable(value = "key") String key, @RequestParam(value = "uploadFile", required = false) Optional<MultipartFile> file,
+	@Valid @RequestParam("info") String info) throws JsonParseException, JsonMappingException, IOException
+	{
+		ObjectMapper objectMapper = new ObjectMapper();
+		TopicRequest topRequest = objectMapper.readValue(info, TopicRequest.class);
+		
+		Topic updateTopic = topicService.update(key, topRequest, file);
 		if (updateTopic == null) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Error: Subject or Topic not found"));
 		}

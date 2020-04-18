@@ -10,7 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface TopicService {
 
-  public Topic create(TopicRequest subRequest, MultipartFile file);
+  public Topic create(TopicRequest subRequest, Optional<MultipartFile> file);
 
   public Iterable<Topic> getAll();
 
@@ -20,7 +20,7 @@ public interface TopicService {
 
   public Optional<Topic> findByKey(String id);
 
-  public Topic update(String id, TopicRequest subRequest);
+  public Topic update(String id, TopicRequest subRequest, Optional<MultipartFile> file);
 
   public void delete(String id);
 
