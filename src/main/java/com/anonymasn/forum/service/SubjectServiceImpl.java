@@ -18,6 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Page;
@@ -61,6 +62,9 @@ public class SubjectServiceImpl implements SubjectService {
 
   @Override
   public Page<Subject> getAll(final int page, final int size) {
+    if (size == -1) {
+      return subjectDao.findAll(Pageable.unpaged());
+    }
     return subjectDao.findAll(PageRequest.of(page, size, Sort.by(Order.desc("id"))));
   }
 

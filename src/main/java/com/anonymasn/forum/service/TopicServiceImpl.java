@@ -2,6 +2,11 @@ package com.anonymasn.forum.service;
 
 import java.util.Optional;
 import java.util.Random;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 import com.anonymasn.forum.dao.TopicDao;
 import com.anonymasn.forum.dao.SubjectDao;
@@ -20,6 +25,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @Service
 public class TopicServiceImpl implements TopicService {
@@ -34,7 +42,7 @@ public class TopicServiceImpl implements TopicService {
   UserDao userDao;
 
   @Override
-  public Topic create(final TopicRequest subRequest) {
+  public Topic create(final TopicRequest subRequest, MultipartFile file) {
     final UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     final Optional<User> createUser = userDao.findById(userDetails.getId());
 
@@ -43,8 +51,12 @@ public class TopicServiceImpl implements TopicService {
     if (!subject.isPresent()) {
 			return null;
     }
-    
-    // subRequest.getImgDefault();
+
+    String imgDefault = null;
+
+    if(!file.isEmpty()) {
+      imgDefault = uploadFile(file);
+    }
 
     final Topic Topic = new Topic(
       subRequest.getTitle(),
@@ -52,7 +64,7 @@ public class TopicServiceImpl implements TopicService {
       subRequest.getKeywords(),
       generateKey(subRequest.getTitle()),
       subRequest.getData(),
-      null,
+      imgDefault,
       subject.get(),
       createUser.get(),
       subRequest.getStatus()
@@ -72,7 +84,11 @@ public class TopicServiceImpl implements TopicService {
     if (!subject.isPresent()) {
 			return null;
     }
-    final Pageable pageable = PageRequest.of(page, size, Sort.by(Order.desc("id")));
+    int customSize = size;
+    if (size == -1) {
+      customSize = Integer.MAX_VALUE;
+    }
+    final Pageable pageable = PageRequest.of(page, customSize, Sort.by(Order.desc("id")));
     return topicDao.findBySubject(subject.get(), pageable);
   }
 
@@ -123,5 +139,22 @@ public class TopicServiceImpl implements TopicService {
       key += rand.nextInt(100000);
     }
     return key;
+  }
+
+  @Override
+  public String uploadFile(MultipartFile file) {
+    String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+		Path path = Paths.get("src/main/resources/public/images/" + fileName);
+
+		try {
+			Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+			.path("/images/")
+			.path(fileName)
+      .toUriString();
+    return fileDownloadUri;
   }
 }

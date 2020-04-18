@@ -6,10 +6,11 @@ import com.anonymasn.forum.model.Topic;
 import com.anonymasn.forum.payload.request.TopicRequest;
 
 import org.springframework.data.domain.Page;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface TopicService {
 
-  public Topic create(TopicRequest subRequest);
+  public Topic create(TopicRequest subRequest, MultipartFile file);
 
   public Iterable<Topic> getAll();
 
@@ -24,4 +25,6 @@ public interface TopicService {
   public void delete(String id);
 
   public String generateKey(String title);
+
+  public String uploadFile(MultipartFile file);
 }

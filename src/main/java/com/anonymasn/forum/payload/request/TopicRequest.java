@@ -20,12 +20,12 @@ public class TopicRequest {
 	@NotEmpty(message = "Please enter keywords")
 	private Set<String> keywords;
 
-	private MultipartFile imgDefault;
-
 	private String data;
 
 	@NotEmpty(message = "Please enter Subject")
 	private String subject;
+
+	private String imgDefault;
 
 	@NotNull
 	private int status;
@@ -54,14 +54,6 @@ public class TopicRequest {
 		this.keywords = keywords;
 	}
 
-	public MultipartFile getImgDefault() {
-		return this.imgDefault;
-	}
-
-	public void setImgDefault(MultipartFile imgDefault) {
-		this.imgDefault = imgDefault;
-	}
-
 	public String getData() {
 		return this.data;
 	}
@@ -76,6 +68,14 @@ public class TopicRequest {
 
 	public void setSubject(String subject) {
 		this.subject = subject;
+	}
+
+	public String getImgDefault() {
+		return this.imgDefault;
+	}
+
+	public void setImgDefault(String imgDefault) {
+		this.imgDefault = imgDefault;
 	}
 
 	public int getStatus() {

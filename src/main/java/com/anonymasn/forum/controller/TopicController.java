@@ -1,5 +1,6 @@
 package com.anonymasn.forum.controller;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 
@@ -9,6 +10,9 @@ import com.anonymasn.forum.model.Topic;
 import com.anonymasn.forum.payload.request.TopicRequest;
 import com.anonymasn.forum.payload.response.MessageResponse;
 import com.anonymasn.forum.service.TopicService;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,7 +20,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.security.access.prepost.PreAuthorize;
-
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -78,8 +82,13 @@ public class TopicController {
 
 	@PostMapping("/add")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN') or hasRole('COACH')")
-	public ResponseEntity<?> addTopic(@Valid @RequestBody TopicRequest topRequest) {
-		Topic newTopic = topicService.create(topRequest);
+	public ResponseEntity<?> addTopic(@RequestParam("uploadFile") MultipartFile file, @Valid @RequestParam("info") String info)
+	throws JsonParseException, JsonMappingException, IOException
+	{
+		ObjectMapper objectMapper = new ObjectMapper();
+		TopicRequest topRequest = objectMapper.readValue(info, TopicRequest.class);
+
+		Topic newTopic = topicService.create(topRequest, file);
 		if (newTopic == null) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Error: Topic not found"));
 		}
