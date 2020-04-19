@@ -147,7 +147,7 @@ public class AuthController {
 		user.setRoles(roles);
 		userDao.save(user);
 
-		emailService.sendSimpleMessage(user.getEmail(), "Email d'invitation", String.format("Bonjour '%s' \nBienvenue sur Anonymous"));
+		emailService.sendSimpleMessage(user.getEmail(), "Email d'invitation", String.format("Bonjour '%s' '%s' \nBienvenue sur Anonymous", user.getFirstName(), user.getLastName()));
 
 		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
 	}
