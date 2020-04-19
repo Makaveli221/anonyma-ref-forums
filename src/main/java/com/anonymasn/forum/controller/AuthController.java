@@ -34,6 +34,7 @@ import com.anonymasn.forum.dao.RoleDao;
 import com.anonymasn.forum.dao.UserDao;
 import com.anonymasn.forum.security.jwt.JwtUtils;
 import com.anonymasn.forum.security.services.UserDetailsImpl;
+import com.anonymasn.forum.service.EmailService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -47,6 +48,9 @@ public class AuthController {
 
 	@Autowired
 	RoleDao roleDao;
+
+	@Autowired
+	EmailService emailService;
 
 	@Autowired
 	PasswordEncoder encoder;
@@ -142,6 +146,8 @@ public class AuthController {
 
 		user.setRoles(roles);
 		userDao.save(user);
+
+		emailService.sendSimpleMessage(user.getEmail(), "Email d'invitation", String.format("Bonjour '%s' \nBienvenue sur Anonymous"));
 
 		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
 	}
