@@ -73,6 +73,20 @@ public class SubjectServiceImpl implements SubjectService {
   }
 
   @Override
+  public Page<Subject> findByTypeSubject(final String name,final int page, final int size) {
+    final Optional<Typesubject> typeSub = typeSubjectDao.findByName(name);
+    if (!typeSub.isPresent()) {
+			return null;
+    }
+    int customSize = size;
+    if (size == -1) {
+      customSize = Integer.MAX_VALUE;
+    }
+    final Pageable pageable = PageRequest.of(page, customSize, Sort.by(Order.desc("id")));
+    return subjectDao.findByTypeSubject(typeSub.get(), pageable);
+  }
+
+  @Override
   public Subject update(String key, SubjectRequest subRequest) {
     Optional<Subject> currSub = subjectDao.findByKey(key);
     Optional<Typesubject> typeSub = typeSubjectDao.findById(subRequest.getTypeSubject());

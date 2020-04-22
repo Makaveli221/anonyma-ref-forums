@@ -2,6 +2,7 @@ package com.anonymasn.forum.service;
 
 import java.io.File;
 
+import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,29 +18,32 @@ public class EmailServiceImpl implements EmailService {
   @Autowired
   public JavaMailSender emailSender;
 
-
   @Override
   public void sendSimpleMessage(String to, String subject, String text) {
-    SimpleMailMessage message = new SimpleMailMessage(); 
-    message.setTo(to); 
-    message.setSubject(subject); 
+    SimpleMailMessage message = new SimpleMailMessage();
+    message.setTo(to);
+    message.setSubject(subject);
     message.setText(text);
     emailSender.send(message);
   }
 
   @Override
   public void sendMessageWithAttachment(String to, String subject, String text, String pathToAttachment) {
-    MimeMessage message = emailSender.createMimeMessage();
+    MimeMessage message = emailSender.createMimeMessage();
 
-    MimeMessageHelper helper = new MimeMessageHelper(message, true);
-
-    helper.setTo(to);
-    helper.setSubject(subject);
-    helper.setText(text);
-
-    FileSystemResource file = new FileSystemResource(new File(pathToAttachment));
-    helper.addAttachment("Invoice", file);
- 
-    emailSender.send(message);
+    MimeMessageHelper helper;
+    try {
+      helper = new MimeMessageHelper(message, true);
+      helper.setTo(to);
+      helper.setSubject(subject);
+      helper.setText(text);
+      
+      FileSystemResource file = new FileSystemResource(new File(pathToAttachment));
+      helper.addAttachment("Invoice", file);
+      
+      emailSender.send(message);
+    } catch (MessagingException e) {
+      e.printStackTrace();
+    }
   }
 }

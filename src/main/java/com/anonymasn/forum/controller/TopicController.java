@@ -48,7 +48,7 @@ public class TopicController {
 	@GetMapping("/subject/{key}")
 	public ResponseEntity<?> AllTopicBySubject(@PathVariable(value = "key") String key, @RequestParam Map<String, String> customQuery) {
 		int page = 0;
-		int limit = 20;
+		int limit = 10;
 		if(customQuery.containsKey("page")) {
 			page = Integer.parseInt(customQuery.get("page"));
 		}
@@ -62,7 +62,7 @@ public class TopicController {
 	@GetMapping("/createuser/{id}")
 	public ResponseEntity<?> AllTopicByCreateUser(@PathVariable(value = "id") String id, @RequestParam Map<String, String> customQuery) {
 		int page = 0;
-		int limit = 20;
+		int limit = 10;
 		if(customQuery.containsKey("page")) {
 			page = Integer.parseInt(customQuery.get("page"));
 		}

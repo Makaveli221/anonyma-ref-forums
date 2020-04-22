@@ -107,7 +107,7 @@ public class SubjectController {
 	@GetMapping("/all")
 	public ResponseEntity<?> AllSubject(@RequestParam Map<String, String> customQuery) {
 		int page = 0;
-		int size = 20;
+		int size = 10;
 		if(customQuery.containsKey("page")) {
 			page = Integer.parseInt(customQuery.get("page"));
 		}
@@ -117,6 +117,20 @@ public class SubjectController {
 		Page<Subject> subjects = subjectService.getAll(page, size);
 		logger.debug("Get all Subjects.");
     return ResponseEntity.status(HttpStatus.OK).body(subjects);
+	}
+
+	@GetMapping("/typesubject/{name}")
+	public ResponseEntity<?> AllSubjectByTypeSubject(@PathVariable(value = "name") String name, @RequestParam Map<String, String> customQuery) {
+		int page = 0;
+		int limit = 10;
+		if(customQuery.containsKey("page")) {
+			page = Integer.parseInt(customQuery.get("page"));
+		}
+		if(customQuery.containsKey("limit")) {
+			limit = Integer.parseInt(customQuery.get("limit"));
+		}
+		Page<Subject> subjects = subjectService.findByTypeSubject(name, page, limit);
+		return ResponseEntity.status(HttpStatus.OK).body(subjects);
 	}
 
 	@GetMapping("/{key}")
