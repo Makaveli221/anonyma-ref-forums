@@ -32,6 +32,11 @@ public class TypesubjectServiceImpl implements TypesubjectService {
   }
 
   @Override
+  public Optional<Typesubject> findByName(String name) {
+    return typeSubjectDao.findByName(name);
+  }
+
+  @Override
   public Typesubject update(Typesubject typeSubject) {
     typeSubjectDao.save(typeSubject);
     return typeSubject;

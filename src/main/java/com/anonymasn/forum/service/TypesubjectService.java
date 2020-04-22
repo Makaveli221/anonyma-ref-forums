@@ -13,6 +13,8 @@ public interface TypesubjectService {
 
   public Optional<Typesubject> findById(String id);
 
+  public Optional<Typesubject> findByName(String name);
+
   public Typesubject update(Typesubject typeSubject);
 
   public Boolean existsByName (String name);

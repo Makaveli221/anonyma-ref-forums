@@ -62,6 +62,14 @@ public class SubjectController {
 		return ResponseEntity.status(HttpStatus.OK).body(typeSubject);
 	}
 
+	@GetMapping("/type/name/{name}")
+	public ResponseEntity<?> getTypeSubjectByName(@PathVariable(value = "name") String name) {
+		Optional<Typesubject> typeSubject = typeSubjectService.findByName(name);
+		logger.debug("Get TypeSubject by name.");
+		
+		return ResponseEntity.status(HttpStatus.OK).body(typeSubject);
+	}
+
 	@PostMapping("/type/add")
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> addTypeSubject(@Valid @RequestBody Typesubject typeSub) {

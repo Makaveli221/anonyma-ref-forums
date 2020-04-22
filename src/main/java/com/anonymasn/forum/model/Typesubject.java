@@ -11,7 +11,9 @@ public class Typesubject {
 	private String id;
 	
 	@NotBlank
-	private String name;
+  private String name;
+
+  private boolean publicType;
 
 	private boolean active;
 
@@ -37,6 +39,14 @@ public class Typesubject {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public boolean isPublicType() {
+    return this.publicType;
+  }
+
+  public void setPublicType(boolean publicType) {
+    this.publicType = publicType;
   }
 
   public boolean isActive() {
