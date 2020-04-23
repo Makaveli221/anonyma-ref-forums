@@ -13,6 +13,7 @@ import com.anonymasn.forum.payload.request.SubjectRequest;
 import com.anonymasn.forum.security.services.UserDetailsImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -40,11 +41,16 @@ public class SubjectServiceImpl implements SubjectService {
     UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     Optional<User> createUser = userDao.findById(userDetails.getId());
 
+
     Optional<Typesubject> typeSub = typeSubjectDao.findById(subRequest.getTypeSubject());
 
     if (!typeSub.isPresent()) {
 			return null;
-		}
+    }
+
+    if (!typeSub.get().isPublicType() && !userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+      throw new RuntimeException("Access denied to create a subject with type is not public.");
+    }
 
     Subject subject = new Subject(
       subRequest.getTitle(),
@@ -90,6 +96,11 @@ public class SubjectServiceImpl implements SubjectService {
   public Subject update(String key, SubjectRequest subRequest) {
     Optional<Subject> currSub = subjectDao.findByKey(key);
     Optional<Typesubject> typeSub = typeSubjectDao.findById(subRequest.getTypeSubject());
+    final UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+    if (!typeSub.get().isPublicType() && !userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+      throw new RuntimeException("Access denied to update a subject with type is not public.");
+    }
 
     if (!currSub.isPresent() || !typeSub.isPresent()) {
 			return null;
@@ -107,6 +118,17 @@ public class SubjectServiceImpl implements SubjectService {
 
   @Override
   public void delete(String id) {
+    Optional<Subject> currSub = subjectDao.findById(id);
+    final UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+    if (!currSub.isPresent()) {
+      return;
+		}
+
+    if (!currSub.get().getTypeSubject().isPublicType() && !userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+      throw new RuntimeException("Access denied to delete a subject with type is not public.");
+    }
+
     subjectDao.deleteById(id);
   }
 

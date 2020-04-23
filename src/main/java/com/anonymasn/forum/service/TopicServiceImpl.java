@@ -23,6 +23,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -50,6 +51,10 @@ public class TopicServiceImpl implements TopicService {
 
     if (!subject.isPresent()) {
 			return null;
+    }
+
+    if (!subject.get().getTypeSubject().isPublicType() && !userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+      throw new RuntimeException("Access denied to create a topic in a subject with type is not public.");
     }
 
     String imgDefault = null;
@@ -111,6 +116,11 @@ public class TopicServiceImpl implements TopicService {
   public Topic update(final String key, final TopicRequest subRequest, Optional<MultipartFile> file) {
     final Optional<Topic> currTopic = topicDao.findByKey(key);
     final Optional<Subject> subject = subjectDao.findById(subRequest.getSubject());
+    final UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+    if (!subject.get().getTypeSubject().isPublicType() && !userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+      throw new RuntimeException("Access denied to update a topic in a subject with type is not public.");
+    }
 
     if (!currTopic.isPresent() || !subject.isPresent()) {
 			return null;
@@ -132,6 +142,17 @@ public class TopicServiceImpl implements TopicService {
 
   @Override
   public void delete(final String id) {
+    final Optional<Topic> currTopic = topicDao.findById(id);
+    final UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+    if (!currTopic.isPresent()) {
+      return;
+		}
+
+    if (!currTopic.get().getSubject().getTypeSubject().isPublicType() && !userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+      throw new RuntimeException("Access denied to delete a topic in a subject with type is not public.");
+    }
+
     topicDao.deleteById(id);
   }
 
