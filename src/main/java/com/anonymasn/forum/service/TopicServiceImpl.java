@@ -2,6 +2,7 @@ package com.anonymasn.forum.service;
 
 import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -11,6 +12,7 @@ import java.nio.file.StandardCopyOption;
 import com.anonymasn.forum.dao.TopicDao;
 import com.anonymasn.forum.dao.SubjectDao;
 import com.anonymasn.forum.dao.UserDao;
+import com.anonymasn.forum.model.Appreciation;
 import com.anonymasn.forum.model.Subject;
 import com.anonymasn.forum.model.Topic;
 import com.anonymasn.forum.model.User;
@@ -188,5 +190,67 @@ public class TopicServiceImpl implements TopicService {
 			.path(fileName)
       .toUriString();
     return fileDownloadUri;
+  }
+
+  @Override
+  public Appreciation addAppreciation(String key, boolean like) {
+    final Optional<Topic> currTopic = topicDao.findByKey(key);
+    final UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    Optional<User> createUser = userDao.findById(userDetails.getId());
+
+    if (!currTopic.isPresent() || !createUser.isPresent()) {
+      return null;
+    }
+
+    Topic topic = currTopic.get();
+
+    Set<Appreciation> appreciations = topic.getAppreciations();
+    int numero = appreciations.size() == 0 ? 1 : appreciations.size();
+    Appreciation appreciation = null;
+
+    for (Appreciation appr : appreciations) {
+      if (appr.getUser().equals(createUser.get())) {
+        appreciation = appr;
+        appreciation.setLiked(like);
+        break;
+      }
+    }
+
+    if (appreciation == null) {
+      appreciation = new Appreciation(numero, createUser.get(), like);
+      appreciations.add(appreciation);
+    }
+
+    topic.setAppreciations(appreciations);
+    
+    topicDao.save(topic);
+
+    return appreciation;
+  }
+
+  @Override
+  public boolean deleteAppreciation(String key, int numero) {
+    final Optional<Topic> currTopic = topicDao.findByKey(key);
+    
+    if (!currTopic.isPresent()) {
+      return false;
+    }
+    
+    Topic topic = currTopic.get();
+
+    Set<Appreciation> appreciations = topic.getAppreciations();
+
+    for (Appreciation appr : appreciations) {
+      if (appr.getNumero() == numero) {
+        appreciations.remove(appr);
+        break;
+      }
+    }
+
+    topic.setAppreciations(appreciations);
+    
+    topicDao.save(topic);
+
+    return true;
   }
 }

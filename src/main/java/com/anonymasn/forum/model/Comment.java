@@ -6,6 +6,8 @@ import java.util.Set;
 
 import javax.validation.constraints.NotBlank;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -16,10 +18,12 @@ public class Comment {
 	@Id
 	private String id;
 
+	@JsonIgnore
 	@DBRef
 	@Field(value = "topic")
 	private Topic topic;
 
+	@JsonIgnore
 	@DBRef
 	@Field(value = "parent")
 	private Comment parent;
@@ -31,6 +35,7 @@ public class Comment {
 	@Field(value = "appreciations")
 	private Set<Appreciation> appreciations = new HashSet<>();
 
+	@JsonIgnore
 	@NotBlank
 	@DBRef
 	@Field(value = "createUser")

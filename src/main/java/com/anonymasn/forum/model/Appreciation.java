@@ -17,6 +17,7 @@ public class Appreciation {
         this.numero = numero;
         this.user = user;
         this.liked = liked;
+        this.createDate = new Date();
     }
 
     public int hashCode() {

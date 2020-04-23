@@ -45,7 +45,6 @@ public class SubjectServiceImpl implements SubjectService {
     UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     Optional<User> createUser = userDao.findById(userDetails.getId());
 
-
     Optional<Typesubject> typeSub = typeSubjectDao.findById(subRequest.getTypeSubject());
 
     if (!typeSub.isPresent()) {

@@ -1,14 +1,19 @@
 package com.anonymasn.forum.controller;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
 import javax.validation.Valid;
 
+import com.anonymasn.forum.model.Appreciation;
+import com.anonymasn.forum.model.Comment;
 import com.anonymasn.forum.model.Topic;
+import com.anonymasn.forum.payload.request.CommentRequest;
 import com.anonymasn.forum.payload.request.TopicRequest;
 import com.anonymasn.forum.payload.response.MessageResponse;
+import com.anonymasn.forum.service.CommentService;
 import com.anonymasn.forum.service.TopicService;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -26,6 +31,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,7 +45,10 @@ public class TopicController {
 	@Autowired
 	TopicService topicService;
 
-  	@GetMapping("/all")
+	@Autowired
+	CommentService commentService;
+
+  @GetMapping("/all")
 	public ResponseEntity<?> AllTopic() {
     Iterable<Topic> topics = topicService.getAll();
     return ResponseEntity.status(HttpStatus.OK).body(topics);
@@ -109,7 +118,7 @@ public class TopicController {
 		return ResponseEntity.status(HttpStatus.OK).body(updateTopic);
 	}
 
-	@DeleteMapping("delete/{key}")
+	@DeleteMapping("/delete/{key}")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN') or hasRole('COACH')")
 	public ResponseEntity<?> deleteTopic(@PathVariable(value = "key") String key) {
 		Optional<Topic> currTopic = topicService.findByKey(key);
@@ -118,5 +127,81 @@ public class TopicController {
 		}
 		topicService.delete(currTopic.get().getId());
 		return ResponseEntity.status(HttpStatus.OK).body(new MessageResponse("Topic is successfully deleted"));
+	}
+
+	@GetMapping("/{key}/comments")
+	public ResponseEntity<?> listCommentsTopic(@PathVariable(value = "key") String key, @RequestParam Map<String, String> customQuery) {
+		int page = 0;
+		int limit = 20;
+		if(customQuery.containsKey("page")) {
+			page = Integer.parseInt(customQuery.get("page"));
+		}
+		if(customQuery.containsKey("limit")) {
+			limit = Integer.parseInt(customQuery.get("limit"));
+		}
+		Page<Comment> comments = commentService.findByTopic(key, page, limit);
+		return ResponseEntity.status(HttpStatus.OK).body(comments);
+	}
+
+	@GetMapping("/{key}/comments/{id}")
+	public ResponseEntity<?> listCommentsParent(@PathVariable(value = "key") String key, @PathVariable(value = "id") String id) {
+		Optional<Topic> currTopic = topicService.findByKey(key);
+		if (!currTopic.isPresent()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Error: Topic not found or deleted."));
+		}
+		Collection<Comment> comments = commentService.findByComment(id);
+		return ResponseEntity.status(HttpStatus.OK).body(comments);
+	}
+
+	@PostMapping("/comment/add")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN') or hasRole('COACH')")
+	public ResponseEntity<?> addComment(@Valid @RequestBody CommentRequest commRequest) {
+		Comment newComment = commentService.create(commRequest);
+		if (newComment == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Error: Source not found"));
+		}
+		return ResponseEntity.status(HttpStatus.CREATED).body(newComment);
+	}
+
+	@PutMapping("/comment/update/{id}")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN') or hasRole('COACH')")
+	public ResponseEntity<?> updateComment(@PathVariable(value = "id") String id, @Valid @RequestBody CommentRequest commRequest) {
+		Comment updateComment = commentService.update(id, commRequest);
+		if (updateComment == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Error: Comment not found"));
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(updateComment);
+	}
+
+	@DeleteMapping("/comment/delete/{id}")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN') or hasRole('COACH')")
+	public ResponseEntity<?> deleteComment(@PathVariable(value = "id") String id) {
+		Optional<Comment> currComm = commentService.findById(id);
+		if (!currComm.isPresent()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Error: Comment not found"));
+		}
+		commentService.delete(currComm.get().getId());
+		return ResponseEntity.status(HttpStatus.OK).body(new MessageResponse("Comment delete successfully"));
+	}
+
+	@PutMapping("/{key}/like/add/{action}")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN') or hasRole('COACH')")
+	public ResponseEntity<?> addLike(@PathVariable(value = "key") String key,  @PathVariable(value = "action") int action) {
+		boolean liked = action == 1 ? true : false;
+		Appreciation appreciation = topicService.addAppreciation(key, liked);
+		if (appreciation == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Error: Topic not found or deleted."));
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(appreciation);
+	}
+
+	@PutMapping("/{key}/like/delete/{id}")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN') or hasRole('COACH')")
+	public ResponseEntity<?> deleteLike(@PathVariable(value = "key") String key, @PathVariable(value = "id") int id) {
+		boolean isDeleted = topicService.deleteAppreciation(key, id);
+		if (isDeleted == false) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Error: Topic not found or deleted."));
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(isDeleted);
 	}
 }

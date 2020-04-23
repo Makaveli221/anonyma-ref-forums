@@ -106,6 +106,10 @@ public class CommentServiceImpl implements CommentService {
     commentDao.deleteById(id);
   }
 
+  public Optional<Comment> findById(String id) {
+    return commentDao.findById(id);
+  }
+
   @Override
   public Page<Comment> findByTopic(String key,int page, int size) {
     final Optional<Topic> topic = topicDao.findByKey(key);
@@ -124,5 +128,4 @@ public class CommentServiceImpl implements CommentService {
     }
     return commentDao.findByParent(parent.get());
   }
-
 }
