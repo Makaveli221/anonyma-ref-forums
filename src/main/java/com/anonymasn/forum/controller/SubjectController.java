@@ -141,6 +141,13 @@ public class SubjectController {
 		return ResponseEntity.status(HttpStatus.OK).body(subjects);
 	}
 
+	@GetMapping("/access/{access}")
+	public ResponseEntity<?> findByTypeSubjectWithPublicType(@PathVariable(value = "access") int access) {
+		boolean publicType = access == 1 ? true : false;
+		Collection<Subject> subjects = subjectService.findByTypeSubjectWithPublicType(publicType);
+		return ResponseEntity.status(HttpStatus.OK).body(subjects);
+	}
+
 	@GetMapping("/{key}")
 	public ResponseEntity<?> singleSubject(@PathVariable(value = "key") String key) {
 		Optional<Subject> subject = subjectService.findByKey(key);

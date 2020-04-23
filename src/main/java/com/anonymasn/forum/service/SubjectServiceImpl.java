@@ -1,7 +1,11 @@
 package com.anonymasn.forum.service;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import com.anonymasn.forum.dao.SubjectDao;
 import com.anonymasn.forum.dao.TypesubjectDao;
@@ -90,6 +94,19 @@ public class SubjectServiceImpl implements SubjectService {
     }
     final Pageable pageable = PageRequest.of(page, customSize, Sort.by(Order.desc("id")));
     return subjectDao.findByTypeSubject(typeSub.get(), pageable);
+  }
+
+  @Override
+  public Collection<Subject> findByTypeSubjectWithPublicType(final boolean publicType) {
+    Iterable<Subject> iterable = subjectDao.findAll();
+    Collection<Subject> subjects = new ArrayList<Subject>();
+    Collection<Subject> subs = StreamSupport.stream(iterable.spliterator(), false).collect(Collectors.toList());
+    for (Subject subject : subs) {
+      if (subject.getTypeSubject().isPublicType() == publicType) {
+        subjects.add(subject);
+      }
+    }
+    return subjects;
   }
 
   @Override

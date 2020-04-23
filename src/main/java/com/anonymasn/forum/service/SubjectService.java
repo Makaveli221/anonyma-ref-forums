@@ -1,5 +1,6 @@
 package com.anonymasn.forum.service;
 
+import java.util.Collection;
 import java.util.Optional;
 
 import com.anonymasn.forum.model.Subject;
@@ -14,6 +15,8 @@ public interface SubjectService {
   public Page<Subject> getAll(final int page, final int size);
 
   public Page<Subject> findByTypeSubject(final String name, final int page, final int limit);
+
+  public Collection<Subject> findByTypeSubjectWithPublicType(final boolean publicType);
   
   public Optional<Subject> findByKey(String key);
 
