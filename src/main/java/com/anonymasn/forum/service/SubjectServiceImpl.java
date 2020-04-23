@@ -113,11 +113,6 @@ public class SubjectServiceImpl implements SubjectService {
   public Subject update(String key, SubjectRequest subRequest) {
     Optional<Subject> currSub = subjectDao.findByKey(key);
     Optional<Typesubject> typeSub = typeSubjectDao.findById(subRequest.getTypeSubject());
-    final UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-    if (!typeSub.get().isPublicType() && !userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
-      throw new RuntimeException("Access denied to update a subject with type is not public.");
-    }
 
     if (!currSub.isPresent() || !typeSub.isPresent()) {
 			return null;
@@ -135,17 +130,6 @@ public class SubjectServiceImpl implements SubjectService {
 
   @Override
   public void delete(String id) {
-    Optional<Subject> currSub = subjectDao.findById(id);
-    final UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-    if (!currSub.isPresent()) {
-      return;
-		}
-
-    if (!currSub.get().getTypeSubject().isPublicType() && !userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
-      throw new RuntimeException("Access denied to delete a subject with type is not public.");
-    }
-
     subjectDao.deleteById(id);
   }
 

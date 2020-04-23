@@ -63,7 +63,7 @@ public class TopicServiceImpl implements TopicService {
       imgDefault = uploadFile(file.get());
     }
 
-    final Topic Topic = new Topic(
+    final Topic topic = new Topic(
       subRequest.getTitle(),
       subRequest.getDescription(),
       subRequest.getKeywords(),
@@ -74,8 +74,8 @@ public class TopicServiceImpl implements TopicService {
       createUser.get(),
       subRequest.getStatus()
     );
-    topicDao.save(Topic);
-    return Topic;
+    topicDao.save(topic);
+    return topic;
   }
 
   @Override
@@ -118,13 +118,16 @@ public class TopicServiceImpl implements TopicService {
     final Optional<Subject> subject = subjectDao.findById(subRequest.getSubject());
     final UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-    if (!subject.get().getTypeSubject().isPublicType() && !userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
-      throw new RuntimeException("Access denied to update a topic in a subject with type is not public.");
-    }
-
     if (!currTopic.isPresent() || !subject.isPresent()) {
 			return null;
 		}
+
+    boolean authorized = userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
+    String idCreateUser = currTopic.get().getCreateUser().getId();
+
+    if ((!subject.get().getTypeSubject().isPublicType() && !authorized) || (!userDetails.getId().equals(idCreateUser) && !authorized)) {
+      throw new RuntimeException("Access denied to update a topic in a subject with type is not public or you are not the author.");
+    }
 
     final Topic topic = currTopic.get();
     topic.setTitle(subRequest.getTitle());
@@ -147,10 +150,14 @@ public class TopicServiceImpl implements TopicService {
 
     if (!currTopic.isPresent()) {
       return;
-		}
+    }
+    
+    boolean authorized = userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
 
-    if (!currTopic.get().getSubject().getTypeSubject().isPublicType() && !userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
-      throw new RuntimeException("Access denied to delete a topic in a subject with type is not public.");
+    String idCreateUser = currTopic.get().getCreateUser().getId();
+
+    if ((!currTopic.get().getSubject().getTypeSubject().isPublicType() && !authorized) || (!userDetails.getId().equals(idCreateUser) && !authorized)) {
+      throw new RuntimeException("Access denied to delete a topic in a subject with type is not public you are not the author.");
     }
 
     topicDao.deleteById(id);

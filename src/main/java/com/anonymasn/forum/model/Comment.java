@@ -42,6 +42,12 @@ public class Comment {
 	public Comment() {
 	}
 
+	public Comment(String message, User createUser) {
+		this.message = message;
+		this.createUser = createUser;
+		this.createDate = new Date();
+	}
+
 	public Comment(String message, Topic topic, Set<Appreciation> appreciations, User createUser) {
 		this.message = message;
 		this.topic = topic;
