@@ -6,9 +6,6 @@ import java.util.Optional;
 import com.anonymasn.forum.model.Role;
 import com.anonymasn.forum.model.User;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 

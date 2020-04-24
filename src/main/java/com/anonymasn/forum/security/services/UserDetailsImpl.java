@@ -110,7 +110,7 @@ public class UserDetailsImpl implements UserDetails {
 
 	@Override
 	public boolean isEnabled() {
-		if (status == 1) {
+		if (status != -1) {
 			return true;
 		}
 		return false;
