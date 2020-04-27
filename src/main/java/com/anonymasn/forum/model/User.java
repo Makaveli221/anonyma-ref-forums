@@ -52,6 +52,12 @@ public class User {
   @Field(value = "status")
   private int status;
 
+  @Field(value = "sex")
+  private String sex;
+
+  @Field(value = "age")
+  private int age;
+
   @JsonIgnore
   @DBRef
   private Set<Role> roles = new HashSet<>();
@@ -140,6 +146,22 @@ public class User {
 
   public void setStatus(int status) {
     this.status = status;
+  }
+
+  public String getSex() {
+    return this.sex;
+  }
+
+  public void setSex(String sex) {
+    this.sex = sex;
+  }
+
+  public int getAge() {
+    return this.age;
+  }
+
+  public void setAge(int age) {
+    this.age = age;
   }
 
   @Override

@@ -71,6 +71,8 @@ public class UserServiceImpl implements UserService {
 			signUpRequest.getUsername(),
       encoder.encode(signUpRequest.getPassword())
     );
+    user.setSex(signUpRequest.isSex() ? "F" : "H");
+    user.setAge(signUpRequest.getAge());
     Set<Role> roles = convertToRoles(signUpRequest.getRoles());
     
     user.setRoles(roles);

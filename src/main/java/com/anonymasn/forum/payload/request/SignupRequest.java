@@ -24,6 +24,10 @@ public class SignupRequest {
 	@NotEmpty(message = "Please enter username")
 	@Size(min = 3, max = 20)
 	private String username;
+
+	private boolean sex;
+
+	private int age;
 	
 	@NotEmpty(message = "Please enter password")
 	@Size(min = 6, max = 40)
@@ -70,6 +74,22 @@ public class SignupRequest {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public boolean isSex() {
+		return this.sex;
+	}
+
+	public void setSex(boolean sex) {
+		this.sex = sex;
+	}
+
+	public int getAge() {
+		return this.age;
+	}
+
+	public void setAge(int age) {
+		this.age = age;
 	}
 
 	public String getPassword() {

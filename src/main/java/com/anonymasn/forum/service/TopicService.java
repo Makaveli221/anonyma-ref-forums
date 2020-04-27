@@ -1,6 +1,7 @@
 package com.anonymasn.forum.service;
 
 import java.util.Optional;
+import java.util.Collection;
 
 import com.anonymasn.forum.model.Appreciation;
 import com.anonymasn.forum.model.Topic;
@@ -29,7 +30,7 @@ public interface TopicService {
 
   public String uploadFile(MultipartFile file);
 
-  public Appreciation addAppreciation(String key, boolean like);
+  public Collection<Appreciation> addAppreciation(String key, boolean like);
 
   public boolean deleteAppreciation(String key, int numero);
 }

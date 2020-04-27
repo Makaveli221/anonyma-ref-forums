@@ -18,12 +18,10 @@ public class Comment {
 	@Id
 	private String id;
 
-	@JsonIgnore
 	@DBRef
 	@Field(value = "topic")
 	private Topic topic;
 
-	@JsonIgnore
 	@DBRef
 	@Field(value = "parent")
 	private Comment parent;

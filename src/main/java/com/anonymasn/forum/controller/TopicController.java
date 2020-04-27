@@ -130,16 +130,8 @@ public class TopicController {
 	}
 
 	@GetMapping("/{key}/comments")
-	public ResponseEntity<?> listCommentsTopic(@PathVariable(value = "key") String key, @RequestParam Map<String, String> customQuery) {
-		int page = 0;
-		int limit = 20;
-		if(customQuery.containsKey("page")) {
-			page = Integer.parseInt(customQuery.get("page"));
-		}
-		if(customQuery.containsKey("limit")) {
-			limit = Integer.parseInt(customQuery.get("limit"));
-		}
-		Page<Comment> comments = commentService.findByTopic(key, page, limit);
+	public ResponseEntity<?> listCommentsTopic(@PathVariable(value = "key") String key) {
+		Collection<Comment> comments = commentService.findByTopic(key);
 		return ResponseEntity.status(HttpStatus.OK).body(comments);
 	}
 
@@ -188,11 +180,8 @@ public class TopicController {
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN') or hasRole('COACH')")
 	public ResponseEntity<?> addLike(@PathVariable(value = "key") String key,  @PathVariable(value = "action") int action) {
 		boolean liked = action == 1 ? true : false;
-		Appreciation appreciation = topicService.addAppreciation(key, liked);
-		if (appreciation == null) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Error: Topic not found or deleted."));
-		}
-		return ResponseEntity.status(HttpStatus.OK).body(appreciation);
+		Collection<Appreciation> appreciations = topicService.addAppreciation(key, liked);
+		return ResponseEntity.status(HttpStatus.OK).body(appreciations);
 	}
 
 	@PutMapping("/{key}/like/delete/{id}")
@@ -203,5 +192,11 @@ public class TopicController {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Error: Topic not found or deleted."));
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(isDeleted);
+	}
+
+	@GetMapping("/comments/last")
+	public ResponseEntity<?> lastComments() {
+		Collection<Comment> comments = commentService.getLastComments();
+		return ResponseEntity.status(HttpStatus.OK).body(comments);
 	}
 }

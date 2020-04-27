@@ -13,9 +13,6 @@ import com.anonymasn.forum.payload.request.CommentRequest;
 import com.anonymasn.forum.security.services.UserDetailsImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -111,13 +108,12 @@ public class CommentServiceImpl implements CommentService {
   }
 
   @Override
-  public Page<Comment> findByTopic(String key,int page, int size) {
+  public Collection<Comment> findByTopic(String key) {
     final Optional<Topic> topic = topicDao.findByKey(key);
     if (!topic.isPresent()) {
 			return null;
     }
-    final Pageable pageable = PageRequest.of(page, size, Sort.by(Order.desc("createDate")));
-    return commentDao.findByTopic(topic.get(), pageable);
+    return commentDao.findByTopicOrderByCreateDateAsc(topic.get());
   }
 
   @Override
@@ -127,5 +123,10 @@ public class CommentServiceImpl implements CommentService {
 			return null;
     }
     return commentDao.findByParent(parent.get());
+  }
+
+  @Override
+  public Collection<Comment> getLastComments() {
+    return commentDao.findTop10ByOrderByCreateDateAsc();
   }
 }

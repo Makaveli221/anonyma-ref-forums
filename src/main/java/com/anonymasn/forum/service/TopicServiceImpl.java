@@ -1,6 +1,7 @@
 package com.anonymasn.forum.service;
 
 import java.util.Optional;
+import java.util.Collection;
 import java.util.Random;
 import java.util.Set;
 import java.io.IOException;
@@ -193,7 +194,7 @@ public class TopicServiceImpl implements TopicService {
   }
 
   @Override
-  public Appreciation addAppreciation(String key, boolean like) {
+  public Collection<Appreciation> addAppreciation(String key, boolean like) {
     final Optional<Topic> currTopic = topicDao.findByKey(key);
     final UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     Optional<User> createUser = userDao.findById(userDetails.getId());
@@ -209,9 +210,8 @@ public class TopicServiceImpl implements TopicService {
     Appreciation appreciation = null;
 
     for (Appreciation appr : appreciations) {
-      if (appr.getUser().equals(createUser.get())) {
+      if (appr.getUser().getEmail().equals(createUser.get().getEmail())) {
         appreciation = appr;
-        appreciation.setLiked(like);
         break;
       }
     }
@@ -219,13 +219,18 @@ public class TopicServiceImpl implements TopicService {
     if (appreciation == null) {
       appreciation = new Appreciation(numero, createUser.get(), like);
       appreciations.add(appreciation);
+    } else {
+      Appreciation appr = appreciation;
+      appreciations.remove(appr);
+      appreciation.setLiked(like);
+      appreciations.add(appreciation);
     }
 
     topic.setAppreciations(appreciations);
     
     topicDao.save(topic);
 
-    return appreciation;
+    return topic.getAppreciations();
   }
 
   @Override
