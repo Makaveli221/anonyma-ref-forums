@@ -1,11 +1,7 @@
 package com.anonymasn.forum.controller;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import com.anonymasn.forum.model.User;
 import com.anonymasn.forum.service.UserService;

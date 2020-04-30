@@ -13,8 +13,6 @@ import com.anonymasn.forum.payload.request.CommentRequest;
 import com.anonymasn.forum.security.services.UserDetailsImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Order;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
