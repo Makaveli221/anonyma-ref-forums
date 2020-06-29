@@ -10,6 +10,7 @@ import java.util.stream.StreamSupport;
 import com.anonymasn.forum.dao.SubjectDao;
 import com.anonymasn.forum.dao.TypesubjectDao;
 import com.anonymasn.forum.dao.UserDao;
+import com.anonymasn.forum.dao.filter.SubjectDefaultFields;
 import com.anonymasn.forum.model.Subject;
 import com.anonymasn.forum.model.Typesubject;
 import com.anonymasn.forum.model.User;
@@ -79,6 +80,15 @@ public class SubjectServiceImpl implements SubjectService {
   @Override
   public Optional<Subject> findByKey(String key) {
     return subjectDao.findByKey(key);
+  }
+
+  @Override
+  public Collection<SubjectDefaultFields> findByTypeSubject(final String name) {
+    final Optional<Typesubject> typeSub = typeSubjectDao.findByName(name);
+    if (!typeSub.isPresent()) {
+			return null;
+    }
+    return subjectDao.findAllByTypeSubject(typeSub.get());
   }
 
   @Override

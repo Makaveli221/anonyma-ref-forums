@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import javax.validation.Valid;
 
+import com.anonymasn.forum.dao.filter.SubjectDefaultFields;
 import com.anonymasn.forum.model.Subject;
 import com.anonymasn.forum.model.Typesubject;
 
@@ -141,6 +142,12 @@ public class SubjectController {
 		return ResponseEntity.status(HttpStatus.OK).body(subjects);
 	}
 
+	@GetMapping("/typesubject/{name}/default")
+	public ResponseEntity<?> AllSubjectDefaultByTypeSubject(@PathVariable(value = "name") String name) {
+		Collection<SubjectDefaultFields> subjects = subjectService.findByTypeSubject(name);
+		return ResponseEntity.status(HttpStatus.OK).body(subjects);
+	}
+
 	@GetMapping("/access/{access}")
 	public ResponseEntity<?> findByTypeSubjectWithPublicType(@PathVariable(value = "access") int access) {
 		boolean publicType = access == 1 ? true : false;
@@ -153,6 +160,14 @@ public class SubjectController {
 		Optional<Subject> subject = subjectService.findByKey(key);
 		logger.debug("Get Subject by key.");
 		
+		return ResponseEntity.status(HttpStatus.OK).body(subject);
+	}
+
+	@GetMapping("/home/list")
+	public ResponseEntity<?> homeListSubject(@PathVariable(value = "key") String key) {
+		Optional<Subject> subject = subjectService.findByKey(key);
+		logger.debug("Get Subject by key.");
+
 		return ResponseEntity.status(HttpStatus.OK).body(subject);
 	}
 

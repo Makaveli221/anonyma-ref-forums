@@ -146,7 +146,6 @@ public class TopicController {
 	}
 
 	@PostMapping("/comment/add")
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN') or hasRole('COACH')")
 	public ResponseEntity<?> addComment(@Valid @RequestBody CommentRequest commRequest) {
 		Comment newComment = commentService.create(commRequest);
 		if (newComment == null) {

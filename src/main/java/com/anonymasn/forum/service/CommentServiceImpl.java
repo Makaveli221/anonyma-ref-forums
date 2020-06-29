@@ -31,10 +31,12 @@ public class CommentServiceImpl implements CommentService {
 
   @Override
   public Comment create(CommentRequest commRequest) {
-    final UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    final Optional<User> createUser = userDao.findById(userDetails.getId());
+    // final UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    // final Optional<User> createUser = userDao.findById(userDetails.getId());
 
-    Comment comment = new Comment(commRequest.getMessage(), createUser.get());
+    // Comment comment = new Comment(commRequest.getMessage(), createUser.get());
+
+    Comment comment = new Comment(commRequest.getMessage());
 
     switch (commRequest.getSource()) {
       case "topic":
@@ -125,6 +127,6 @@ public class CommentServiceImpl implements CommentService {
 
   @Override
   public Collection<Comment> getLastComments() {
-    return commentDao.findTop10ByOrderByCreateDateAsc();
+    return commentDao.findTop5ByOrderByCreateDateDesc();
   }
 }

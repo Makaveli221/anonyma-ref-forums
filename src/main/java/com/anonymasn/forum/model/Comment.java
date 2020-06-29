@@ -34,7 +34,6 @@ public class Comment {
 	private Set<Appreciation> appreciations = new HashSet<>();
 
 	@JsonIgnore
-	@NotBlank
 	@DBRef
 	@Field(value = "createUser")
 	private User createUser;
@@ -43,6 +42,11 @@ public class Comment {
 	private Date createDate;
 
 	public Comment() {
+	}
+
+	public Comment(String message) {
+		this.message = message;
+		this.createDate = new Date();
 	}
 
 	public Comment(String message, User createUser) {

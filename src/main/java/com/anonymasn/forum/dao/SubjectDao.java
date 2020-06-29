@@ -1,7 +1,9 @@
 package com.anonymasn.forum.dao;
 
+import java.util.Collection;
 import java.util.Optional;
 
+import com.anonymasn.forum.dao.filter.SubjectDefaultFields;
 import com.anonymasn.forum.model.Subject;
 import com.anonymasn.forum.model.Typesubject;
 import com.anonymasn.forum.model.User;
@@ -13,7 +15,12 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SubjectDao extends PagingAndSortingRepository<Subject, String> {
+
+    Collection<SubjectDefaultFields> findAllByTypeSubject(Typesubject typeSubject);
+
     public Optional<Subject> findByKey(String key);
+
+    public Collection<Subject> findByTypeSubject(Typesubject typeSubject);
 
     public Page<Subject> findByTypeSubject(Typesubject typeSubject, Pageable pageable);
 
