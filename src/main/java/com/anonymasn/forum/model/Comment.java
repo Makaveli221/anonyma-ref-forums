@@ -23,6 +23,10 @@ public class Comment {
 	private Topic topic;
 
 	@DBRef
+	@Field(value = "histoire")
+	private Message histoire;
+
+	@DBRef
 	@Field(value = "parent")
 	private Comment parent;
 
@@ -85,6 +89,14 @@ public class Comment {
 
 	public void setTopic(Topic topic) {
 		this.topic = topic;
+	}
+
+	public Message getHistoire() {
+		return this.histoire;
+	}
+
+	public void setHistoire(Message histoire) {
+		this.histoire = histoire;
 	}
 
 	public Comment getParent() {

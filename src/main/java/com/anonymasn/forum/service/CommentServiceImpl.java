@@ -4,9 +4,11 @@ import java.util.Collection;
 import java.util.Optional;
 
 import com.anonymasn.forum.dao.CommentDao;
+import com.anonymasn.forum.dao.MessageDao;
 import com.anonymasn.forum.dao.TopicDao;
 import com.anonymasn.forum.dao.UserDao;
 import com.anonymasn.forum.model.Comment;
+import com.anonymasn.forum.model.Message;
 import com.anonymasn.forum.model.Topic;
 import com.anonymasn.forum.model.User;
 import com.anonymasn.forum.payload.request.CommentRequest;
@@ -27,6 +29,9 @@ public class CommentServiceImpl implements CommentService {
   TopicDao topicDao;
 
   @Autowired
+  MessageDao messageDao;
+
+  @Autowired
   UserDao userDao;
 
   @Override
@@ -45,6 +50,14 @@ public class CommentServiceImpl implements CommentService {
           return null;
         }
         comment.setTopic(topic.get());
+        break;
+
+      case "histoire":
+        Optional<Message> histoire = messageDao.findById(commRequest.getIdSource());
+        if(!histoire.isPresent()) {
+          return null;
+        }
+        comment.setHistoire(histoire.get());
         break;
       
       case "comment":
@@ -114,6 +127,15 @@ public class CommentServiceImpl implements CommentService {
 			return null;
     }
     return commentDao.findByTopicOrderByCreateDateAsc(topic.get());
+  }
+
+  @Override
+  public Collection<Comment> findByHsitoire(String id) {
+    final Optional<Message> histoire = messageDao.findById(id);
+    if (!histoire.isPresent()) {
+			return null;
+    }
+    return commentDao.findByHistoireOrderByCreateDateAsc(histoire.get());
   }
 
   @Override

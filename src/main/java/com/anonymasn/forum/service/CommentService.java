@@ -18,6 +18,8 @@ public interface CommentService {
 
   public Collection<Comment> findByTopic(String key);
 
+  public Collection<Comment> findByHsitoire(String id);
+
   public Collection<Comment> findByComment(String id);
 
   public Collection<Comment> getLastComments();
