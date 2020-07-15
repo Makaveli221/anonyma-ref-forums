@@ -57,7 +57,11 @@ public class CommentServiceImpl implements CommentService {
         if(!histoire.isPresent()) {
           return null;
         }
-        comment.setHistoire(histoire.get());
+        Message hist = histoire.get();
+        long commentTotal = hist.getCommentTotal() + 1;
+        hist.setCommentTotal(commentTotal);
+        messageDao.save(hist);
+        comment.setHistoire(hist);
         break;
       
       case "comment":

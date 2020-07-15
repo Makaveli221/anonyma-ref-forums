@@ -14,7 +14,7 @@ public interface MessageDao extends MongoRepository<Message, String> {
 
 	public Collection<Message> findByTypeAndEmail(EMessage type, String email);
 
-	public Collection<Message> findTop3ByOrderByCreateDateDesc();
+	public Collection<Message> findTop3ByValidateAndPublishedOrderByCreateDateDesc(boolean validate, boolean published);
 
 	public Collection<Message> findByValidateTrueAndPublishedTrue();
 

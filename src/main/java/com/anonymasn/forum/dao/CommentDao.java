@@ -24,4 +24,6 @@ public interface CommentDao extends MongoRepository<Comment, String> {
     public Collection<Comment> findByParent(Comment comment);
 
     public Collection<Comment> findTop5ByOrderByCreateDateDesc();
+
+    public Long countByHistoire(Message histoire);
 }

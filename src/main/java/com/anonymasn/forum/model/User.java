@@ -58,7 +58,6 @@ public class User {
   @Field(value = "age")
   private int age;
 
-  @JsonIgnore
   @DBRef
   private Set<Role> roles = new HashSet<>();
 
@@ -88,7 +87,7 @@ public class User {
     return firstName;
   }
 
-  public void setFirsttName(String lastName) {
+  public void setFirstName(String lastName) {
     this.lastName = lastName;
   }
 

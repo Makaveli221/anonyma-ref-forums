@@ -7,6 +7,7 @@ import java.util.Set;
 import javax.validation.constraints.NotBlank;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -42,6 +43,10 @@ public class Message {
   
   @Field(value = "createDate")
   private Date createDate;
+
+  @Field(value = "commentTotal")
+  private long commentTotal;
+
   
   public Message() {
 	}
@@ -125,5 +130,13 @@ public class Message {
 
 	public void setCreateDate(Date createDate) {
 		this.createDate = createDate;
+  }
+  
+  public long getCommentTotal() {
+		return this.commentTotal;
+	}
+
+	public void setCommentTotal(long commentTotal) {
+		this.commentTotal = commentTotal;
 	}
 }

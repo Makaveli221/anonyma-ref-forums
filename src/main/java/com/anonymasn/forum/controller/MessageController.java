@@ -93,10 +93,22 @@ public class MessageController {
 		return ResponseEntity.status(HttpStatus.OK).body(new MessageResponse("Message is successfully deleted"));
 	}
 
+	@GetMapping("/last")
+	public ResponseEntity<?> lastMessages() {
+		Collection<Message> messages = messageService.getLastMessages();
+		return ResponseEntity.status(HttpStatus.OK).body(messages);
+	}
+
 	@GetMapping("/{id}/comments")
-	public ResponseEntity<?> listCommentsTopic(@PathVariable(value = "id") String id) {
+	public ResponseEntity<?> listComments(@PathVariable(value = "id") String id) {
 		Collection<Comment> comments = commentService.findByHsitoire(id);
 		return ResponseEntity.status(HttpStatus.OK).body(comments);
+	}
+
+	@GetMapping("/{id}/comments/count")
+	public ResponseEntity<?> countComments(@PathVariable(value = "id") String id) {
+		Collection<Comment> comments = commentService.findByHsitoire(id);
+		return ResponseEntity.status(HttpStatus.OK).body(comments.stream().count());
 	}
 
 	@PostMapping("/comment/add")

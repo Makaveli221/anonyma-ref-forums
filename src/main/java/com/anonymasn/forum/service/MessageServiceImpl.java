@@ -164,6 +164,6 @@ public class MessageServiceImpl implements MessageService  {
   }
 
   public Collection<Message> getLastMessages() {
-    return messageDao.findTop3ByOrderByCreateDateDesc();
+    return messageDao.findTop3ByValidateAndPublishedOrderByCreateDateDesc(true, true);
   }
 }

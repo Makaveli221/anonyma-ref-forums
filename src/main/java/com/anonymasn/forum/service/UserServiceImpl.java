@@ -1,5 +1,6 @@
 package com.anonymasn.forum.service;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +14,7 @@ import com.anonymasn.forum.model.Role;
 import com.anonymasn.forum.model.User;
 import com.anonymasn.forum.payload.request.LoginRequest;
 import com.anonymasn.forum.payload.request.SignupRequest;
+import com.anonymasn.forum.payload.request.UserRequest;
 import com.anonymasn.forum.payload.response.JwtResponse;
 import com.anonymasn.forum.security.jwt.JwtUtils;
 import com.anonymasn.forum.security.services.UserDetailsImpl;
@@ -49,10 +51,65 @@ public class UserServiceImpl implements UserService {
 	PasswordEncoder encoder;
 
 	@Autowired
-	JwtUtils jwtUtils;
+  JwtUtils jwtUtils;
+  
+  @Override
+  public User create(UserRequest userRequest) {
+		if (!userRequest.getUsername().equals(userRequest.getEmail()) || userDao.existsByEmail(userRequest.getEmail())) {
+			return null;
+    }
+    
+    String password = "passer";
+
+		// Create new user's account
+		User user = new User(
+			userRequest.getFirstName(),
+			userRequest.getLastName(),
+			userRequest.getEmail(),
+			userRequest.getPhone(),
+			userRequest.getUsername(),
+      encoder.encode(password)
+    );
+    Set<Role> roles = convertToRoles(userRequest.getRoles());
+    
+    user.setRoles(roles);
+		userDao.save(user);
+
+    // emailService.sendSimpleMessage(user.getEmail(),"Bienvenue sur Anonym@",
+    //   String.format("Bonjour %s %s. Vous venez d'être ajouter sur Anonym@.<br> Votre mot de passe est '%s'.<br>Une fois connecté veuillez changer votre mot de passe.",
+    //   user.getFirstName(), user.getLastName(), password));
+    
+    return user;
+  }
 
   @Override
-  public User create(SignupRequest signUpRequest) {
+  public User update(String id, UserRequest userRequest) {
+    Optional<User> currUser = userDao.findById(id);
+
+    if (!currUser.isPresent()) {
+			return null;
+    }
+    
+    Set<Role> roles = convertToRoles(userRequest.getRoles());
+
+    User user = currUser.get();
+    user.setFirstName(userRequest.getFirstName());
+    user.setlastName(userRequest.getLastName());
+    user.setEmail(userRequest.getEmail());
+    user.setUsername(userRequest.getUsername());
+    user.setPhone(userRequest.getPhone());
+    user.setRoles(roles);
+    userDao.save(user);
+    return user;
+  }
+
+  @Override
+  public void delete(String id) {
+    userDao.deleteById(id);
+  }
+
+  @Override
+  public User signUp(SignupRequest signUpRequest) {
     if (userDao.existsByUsername(signUpRequest.getUsername())) {
 			return null;
 		}
@@ -116,6 +173,11 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  public Optional<User> findById(String id) {
+    return userDao.findById(id);
+  }
+
+  @Override
   public Optional<User> findByEmail(String email) {
     return userDao.findByEmail(email);
   }
@@ -175,5 +237,9 @@ public class UserServiceImpl implements UserService {
     }
 
     return roles;
+  }
+
+  public Collection<Role> getListRoles() {
+    return roleDao.findAll();
   }
 }
