@@ -5,12 +5,14 @@ import java.util.Collection;
 import com.anonymasn.forum.model.Message;
 import com.anonymasn.forum.model.EMessage;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface MessageDao extends MongoRepository<Message, String> {  
-	public Collection<Message> findByType(EMessage type);
+public interface MessageDao extends PagingAndSortingRepository<Message, String> {  
+	public Page<Message> findByType(EMessage type, Pageable pageable);
 
 	public Collection<Message> findByTypeAndEmail(EMessage type, String email);
 
@@ -18,5 +20,5 @@ public interface MessageDao extends MongoRepository<Message, String> {
 
 	public Collection<Message> findByValidateTrueAndPublishedTrue();
 
-	public Collection<Message> findByPublishedTrue();
+	public Page<Message> findByPublishedTrue(Pageable pageable);
 }

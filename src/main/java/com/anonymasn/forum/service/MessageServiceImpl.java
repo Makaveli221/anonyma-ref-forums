@@ -14,6 +14,12 @@ import com.anonymasn.forum.payload.request.MessageRequest;
 import com.anonymasn.forum.security.services.UserDetailsImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -43,6 +49,8 @@ public class MessageServiceImpl implements MessageService  {
   @Override
   public Message update(String id, MessageRequest messRequest) {
     Optional<Message> currmessage = messageDao.findById(id);
+    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
     if (!currmessage.isPresent()) {
       return  null;
     }
@@ -51,16 +59,19 @@ public class MessageServiceImpl implements MessageService  {
     message.setEmail(messRequest.getEmail());
     message.setTexte(messRequest.getTexte());
     message.setResponse(messRequest.getResponse());
-    message.setValidate(messRequest.isValidate());
-    message.setPublished(messRequest.isPublished());
+    if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+      message.setValidate(messRequest.isValidate());
+      message.setPublished(messRequest.isPublished());
+    }
     messageDao.save(message);
     return message;
   }
 
   @Override
   public void delete(String id) {
+    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     Optional<Message> currMessage = messageDao.findById(id);
-    if (!currMessage.isPresent()) {
+    if (!currMessage.isPresent() || !userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
       return;
     }
 
@@ -73,8 +84,9 @@ public class MessageServiceImpl implements MessageService  {
   }
 
   @Override
-  public Collection<Message> findByPublished() {
-    return messageDao.findByPublishedTrue();
+  public Page<Message> findByPublished(int page, int size) {
+    final Pageable pageable = PageRequest.of(page, size, Sort.by(Order.desc("id")));
+    return messageDao.findByPublishedTrue(pageable);
   }
 
   @Override
@@ -88,13 +100,14 @@ public class MessageServiceImpl implements MessageService  {
   }
 
   @Override
-  public Collection<Message> findByType(String typeRequest) {
+  public Page<Message> findByType(String typeRequest, int page, int size) {
+    final Pageable pageable = PageRequest.of(page, size, Sort.by(Order.desc("id")));
     EMessage type = EMessage.HISTORY;
     if(typeRequest.equals("chatbox")) {
       type = EMessage.CHATBOX;
     }
 
-    return messageDao.findByType(type);
+    return messageDao.findByType(type, pageable);
   }
 
   @Override

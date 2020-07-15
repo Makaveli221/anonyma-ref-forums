@@ -1,6 +1,7 @@
 package com.anonymasn.forum.service;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +20,7 @@ import com.anonymasn.forum.payload.response.JwtResponse;
 import com.anonymasn.forum.security.jwt.JwtUtils;
 import com.anonymasn.forum.security.services.UserDetailsImpl;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -59,7 +61,7 @@ public class UserServiceImpl implements UserService {
 			return null;
     }
     
-    String password = "passer";
+    String password = generateCommonLangPassword();
 
 		// Create new user's account
 		User user = new User(
@@ -75,9 +77,9 @@ public class UserServiceImpl implements UserService {
     user.setRoles(roles);
 		userDao.save(user);
 
-    // emailService.sendSimpleMessage(user.getEmail(),"Bienvenue sur Anonym@",
-    //   String.format("Bonjour %s %s. Vous venez d'être ajouter sur Anonym@.<br> Votre mot de passe est '%s'.<br>Une fois connecté veuillez changer votre mot de passe.",
-    //   user.getFirstName(), user.getLastName(), password));
+    emailService.sendSimpleMessage(user.getEmail(),"Bienvenue sur Anonym@",
+      String.format("Bonjour %s %s. Vous venez d'être ajouter sur Anonym@. Votre mot de passe est %s. Une fois connecté veuillez changer votre mot de passe.",
+      user.getFirstName(), user.getLastName(), password));
     
     return user;
   }
@@ -239,7 +241,28 @@ public class UserServiceImpl implements UserService {
     return roles;
   }
 
+  @Override
   public Collection<Role> getListRoles() {
     return roleDao.findAll();
+  }
+
+  public String generateCommonLangPassword() {
+    String upperCaseLetters = RandomStringUtils.random(2, 65, 90, true, true);
+    String lowerCaseLetters = RandomStringUtils.random(2, 97, 122, true, true);
+    String numbers = RandomStringUtils.randomNumeric(2);
+    String specialChar = RandomStringUtils.random(2, 33, 47, false, false);
+    String totalChars = RandomStringUtils.randomAlphanumeric(2);
+    String combinedChars = upperCaseLetters.concat(lowerCaseLetters)
+      .concat(numbers)
+      .concat(specialChar)
+      .concat(totalChars);
+    List<Character> pwdChars = combinedChars.chars()
+      .mapToObj(c -> (char) c)
+      .collect(Collectors.toList());
+    Collections.shuffle(pwdChars);
+    String password = pwdChars.stream()
+      .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
+      .toString();
+    return password;
   }
 }

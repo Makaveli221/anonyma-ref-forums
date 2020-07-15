@@ -1,6 +1,7 @@
 package com.anonymasn.forum.controller;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.validation.Valid;
@@ -14,6 +15,7 @@ import com.anonymasn.forum.service.CommentService;
 import com.anonymasn.forum.service.MessageService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -40,8 +43,16 @@ public class MessageController {
 	CommentService commentService;
   
   @GetMapping("/all/{type}")
-	public ResponseEntity<?> filterByType(@PathVariable(value = "type") String type) {
-    Collection<Message> messages = messageService.findByType(type);
+	public ResponseEntity<?> filterByType(@PathVariable(value = "type") String type, @RequestParam Map<String, String> customQuery) {
+		int page = 0;
+		int limit = 10;
+		if(customQuery.containsKey("page")) {
+			page = Integer.parseInt(customQuery.get("page"));
+		}
+		if(customQuery.containsKey("limit")) {
+			limit = Integer.parseInt(customQuery.get("limit"));
+		}
+    Page<Message> messages = messageService.findByType(type, page, limit);
 		return ResponseEntity.status(HttpStatus.OK).body(messages);
   }
 
@@ -52,8 +63,16 @@ public class MessageController {
 	}
 	
 	@GetMapping("/history/published")
-	public ResponseEntity<?> filterByPublished() {
-		Collection<Message> messages = messageService.findByPublished();
+	public ResponseEntity<?> filterByPublished(@RequestParam Map<String, String> customQuery) {
+		int page = 0;
+		int limit = 10;
+		if(customQuery.containsKey("page")) {
+			page = Integer.parseInt(customQuery.get("page"));
+		}
+		if(customQuery.containsKey("limit")) {
+			limit = Integer.parseInt(customQuery.get("limit"));
+		}
+    Page<Message> messages = messageService.findByPublished(page, limit);
 		return ResponseEntity.status(HttpStatus.OK).body(messages);
 	}
 

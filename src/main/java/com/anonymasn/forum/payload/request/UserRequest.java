@@ -22,7 +22,7 @@ public class UserRequest {
   	private String phone;
 
 	@NotEmpty(message = "Please enter username")
-	@Size(min = 3, max = 20)
+	@Size(min = 3, max = 50)
 	private String username;
 
 	@NotEmpty(message = "Please enter roles")

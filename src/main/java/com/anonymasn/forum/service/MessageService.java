@@ -7,6 +7,8 @@ import com.anonymasn.forum.model.Appreciation;
 import com.anonymasn.forum.model.Message;
 import com.anonymasn.forum.payload.request.MessageRequest;
 
+import org.springframework.data.domain.Page;
+
 public interface MessageService {
 
   public Message create(MessageRequest messRequest);
@@ -17,11 +19,11 @@ public interface MessageService {
 
   public Optional<Message> findById(String id);
 
-  public Collection<Message> findByPublished();
+  public Page<Message> findByPublished(int page, int size);
 
   public Collection<Message> findByTypeAndEmail(String typeRequest, String email);
 
-  public Collection<Message> findByType(String typeRequest);
+  public Page<Message> findByType(String typeRequest, int page, int size);
 
   public Collection<Appreciation> addAppreciation(String key, boolean like);
 
