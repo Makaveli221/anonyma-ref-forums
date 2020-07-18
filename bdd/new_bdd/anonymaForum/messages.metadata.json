@@ -1,0 +1,1 @@
+{"options":{},"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"anonymaForum.messages"}],"uuid":"7f1c13075f6a4c209180be9025900488"}
