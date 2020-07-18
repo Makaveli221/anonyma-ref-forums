@@ -27,7 +27,7 @@ public class UpdateUserRequest {
 	@Size(max = 20)
 	private String phone;
 	
-	private boolean sex;
+	private String sex;
 
 	private int age;
 	
@@ -62,7 +62,7 @@ public class UpdateUserRequest {
 		this.email = email;
 	}
 
-	public boolean isSex() {
+	public String getSex() {
 		return this.sex;
 	}
 

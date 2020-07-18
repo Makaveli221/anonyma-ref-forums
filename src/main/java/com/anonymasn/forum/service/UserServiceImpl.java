@@ -119,7 +119,7 @@ public class UserServiceImpl implements UserService {
     if(!updateUserRequest.getPassword().isEmpty()) {
       user.setPassword(encoder.encode(updateUserRequest.getPassword()));
     }
-    user.setSex(updateUserRequest.isSex() ? "H" : "F");
+    user.setSex(updateUserRequest.getSex());
     user.setAge(updateUserRequest.getAge());
     userDao.save(user);
     return user;
