@@ -39,7 +39,7 @@ public class AuthController {
 
 	@PostMapping("/signup")
 	public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
-		User newUser = userService.create(signUpRequest);
+		User newUser = userService.signUp(signUpRequest);
 		if (newUser == null) {
 			return ResponseEntity
 				.badRequest()

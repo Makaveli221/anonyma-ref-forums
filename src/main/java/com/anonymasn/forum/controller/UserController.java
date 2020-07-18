@@ -8,6 +8,8 @@ import javax.validation.Valid;
 
 import com.anonymasn.forum.model.Role;
 import com.anonymasn.forum.model.User;
+import com.anonymasn.forum.payload.request.SignupRequest;
+import com.anonymasn.forum.payload.request.UpdateUserRequest;
 import com.anonymasn.forum.payload.request.UserRequest;
 import com.anonymasn.forum.payload.response.MessageResponse;
 import com.anonymasn.forum.service.UserService;
@@ -52,9 +54,9 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).body(users);
   }
   
-  @GetMapping("/{email}")
-	public ResponseEntity<?> Single(@PathVariable(value = "email") String email) {
-		Optional<User> user = userService.findByEmail(email);
+  @GetMapping("/{id}")
+	public ResponseEntity<?> Single(@PathVariable(value = "id") String id) {
+		Optional<User> user = userService.findById(id);
 		return ResponseEntity.status(HttpStatus.OK).body(user);
 	}
 	
@@ -76,7 +78,17 @@ public class UserController {
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(updateUser);
 	}
-  
+
+	@PostMapping("/profil/update")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> updateProfil(@Valid @RequestBody UpdateUserRequest updateUserRequest) {
+		User updateUser = userService.updateProfil(updateUserRequest);
+		if (updateUser == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Error: User not found"));
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(updateUser);
+	}
+
   @DeleteMapping("/delete/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> delete(@PathVariable(value = "id") String id) {

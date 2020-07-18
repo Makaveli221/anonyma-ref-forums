@@ -8,6 +8,7 @@ import com.anonymasn.forum.model.Role;
 import com.anonymasn.forum.model.User;
 import com.anonymasn.forum.payload.request.LoginRequest;
 import com.anonymasn.forum.payload.request.SignupRequest;
+import com.anonymasn.forum.payload.request.UpdateUserRequest;
 import com.anonymasn.forum.payload.request.UserRequest;
 import com.anonymasn.forum.payload.response.JwtResponse;
 
@@ -15,9 +16,11 @@ import org.springframework.data.domain.Page;
 
 public interface UserService {
 
-  public User create(UserRequest sserRequest);
+  public User create(UserRequest userRequest);
 
-  public User update(String email, UserRequest userRequest);
+  public User update(String id, UserRequest userRequest);
+
+  public User updateProfil(UpdateUserRequest updateUserRequest);
 
   public void delete(String id);
 

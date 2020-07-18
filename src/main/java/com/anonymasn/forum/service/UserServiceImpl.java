@@ -15,6 +15,7 @@ import com.anonymasn.forum.model.Role;
 import com.anonymasn.forum.model.User;
 import com.anonymasn.forum.payload.request.LoginRequest;
 import com.anonymasn.forum.payload.request.SignupRequest;
+import com.anonymasn.forum.payload.request.UpdateUserRequest;
 import com.anonymasn.forum.payload.request.UserRequest;
 import com.anonymasn.forum.payload.response.JwtResponse;
 import com.anonymasn.forum.security.jwt.JwtUtils;
@@ -101,6 +102,25 @@ public class UserServiceImpl implements UserService {
     user.setUsername(userRequest.getUsername());
     user.setPhone(userRequest.getPhone());
     user.setRoles(roles);
+    userDao.save(user);
+    return user;
+  }
+
+  @Override
+  public User updateProfil(UpdateUserRequest updateUserRequest) {
+    final UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    final Optional<User> currUser = userDao.findById(userDetails.getId());
+
+    User user = currUser.get();
+    user.setFirstName(updateUserRequest.getFirstName());
+    user.setlastName(updateUserRequest.getLastName());
+    user.setUsername(updateUserRequest.getUsername());
+    user.setPhone(updateUserRequest.getPhone());
+    if(!updateUserRequest.getPassword().isEmpty()) {
+      user.setPassword(encoder.encode(updateUserRequest.getPassword()));
+    }
+    user.setSex(updateUserRequest.isSex() ? "H" : "F");
+    user.setAge(updateUserRequest.getAge());
     userDao.save(user);
     return user;
   }
