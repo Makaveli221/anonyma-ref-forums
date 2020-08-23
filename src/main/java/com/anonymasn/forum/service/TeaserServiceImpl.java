@@ -147,10 +147,6 @@ public class TeaserServiceImpl implements TeaserService {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-			.path("/images/")
-			.path(fileName)
-      .toUriString();
     return fileName;
   }
 

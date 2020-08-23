@@ -3,8 +3,11 @@ package com.anonymasn.forum.service;
 import java.util.Optional;
 import java.util.Collection;
 import java.util.Random;
+import java.util.UUID;
 import java.util.Set;
 import java.io.IOException;
+import java.io.FileNotFoundException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -21,6 +24,8 @@ import com.anonymasn.forum.payload.request.TopicRequest;
 import com.anonymasn.forum.security.services.UserDetailsImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -178,19 +183,55 @@ public class TopicServiceImpl implements TopicService {
 
   @Override
   public String uploadFile(MultipartFile file) {
-    String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-		Path path = Paths.get("src/main/resources/public/images/" + fileName);
+    // Create to upload file if not exist
+    final Path fileStorageLocation = Paths.get("src/main/resources/public/images").toAbsolutePath().normalize();
+    try {
+      Files.createDirectories(fileStorageLocation);
+    } catch (Exception ex) {
+      throw new RuntimeException("Could not create the directory where the uploaded files will be stored.", ex);
+    }
+
+    String originalFileName = StringUtils.cleanPath(file.getOriginalFilename());
+    String fileName = "";
 
 		try {
-			Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+      if(originalFileName.contains("..")) {
+        throw new RuntimeException("Sorry! Filename contains invalid path sequence " + originalFileName);
+      }
+
+      String fileExtension = "";
+      try {
+        fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
+      } catch(Exception e) {
+        throw new RuntimeException("Sorry! Filename is invalid. " + originalFileName);
+      }
+
+      fileName = UUID.randomUUID().toString() + "-teaser" + fileExtension;
+      Path targetLocation = fileStorageLocation.resolve(fileName);
+
+      Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
-		String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-			.path("/images/")
-			.path(fileName)
-      .toUriString();
-    return fileDownloadUri;
+    }
+
+    return fileName;
+  }
+
+  @Override
+  public Resource loadFileAsResource(String fileName) throws Exception {
+    final Path fileStorageLocation = Paths.get("src/main/resources/public/images").toAbsolutePath().normalize();
+
+    try {
+      Path filePath = fileStorageLocation.resolve(fileName).normalize();
+      Resource resource = new UrlResource(filePath.toUri());
+      if(resource.exists()) {
+        return resource;
+      } else {
+        throw new FileNotFoundException("File not found " + fileName);
+      }
+    } catch (MalformedURLException ex) {
+      throw new FileNotFoundException("File not found " + fileName);
+    }
   }
 
   @Override

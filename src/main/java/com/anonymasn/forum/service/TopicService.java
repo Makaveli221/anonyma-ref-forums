@@ -7,6 +7,7 @@ import com.anonymasn.forum.model.Appreciation;
 import com.anonymasn.forum.model.Topic;
 import com.anonymasn.forum.payload.request.TopicRequest;
 
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,6 +30,8 @@ public interface TopicService {
   public String generateKey(String title);
 
   public String uploadFile(MultipartFile file);
+
+  public Resource loadFileAsResource(String fileName) throws Exception;
 
   public Collection<Appreciation> addAppreciation(String key, boolean like);
 
