@@ -6,6 +6,7 @@ import java.util.Collection;
 import com.anonymasn.forum.model.Teaser;
 import com.anonymasn.forum.payload.request.TeaserRequest;
 
+import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface TeaserService {
@@ -21,4 +22,6 @@ public interface TeaserService {
   public void delete(String id);
 
   public String uploadFile(MultipartFile file);
+
+  public Resource loadFileAsResource(String fileName) throws Exception;
 }
