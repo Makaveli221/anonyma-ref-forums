@@ -7,6 +7,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -54,20 +55,32 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.cors().and().csrf().disable()
-			.exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
-			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-			.authorizeRequests().antMatchers("/auth/**").permitAll()
+			http.authorizeRequests()
+			.antMatchers("/v2/api-docs", "/swagger-resources/configuration/ui", "/swagger-resources", "/swagger-resources/configuration/security", "/swagger-ui.html", "/webjars/**").permitAll()
+			.and()
+			.authorizeRequests()
+			.antMatchers("/auth/**").permitAll()
 			.antMatchers("/images/**").permitAll()
-			.antMatchers("/test/**").permitAll()
 			.antMatchers("/subject/**").permitAll()
 			.antMatchers("/topic/**").permitAll()
 			.antMatchers("/comment/**").permitAll()
 			.antMatchers("/teaser/**").permitAll()
 			.antMatchers("/message/**").permitAll()
 			.antMatchers("/user/**").permitAll()
-			.anyRequest().authenticated();
+			.anyRequest()
+			.authenticated()
+			.and().cors().and().csrf().disable()
+			.exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
+			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
 
 		http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+	}
+
+	@Override
+	public void configure(WebSecurity web) throws Exception {
+		web.ignoring().antMatchers("/v2/api-docs", "/configuration/ui", 
+				"/swagger-resources/**", "/configuration/**", "/swagger-ui.html"
+				, "/webjars/**", "/csrf", "/");
 	}
 }

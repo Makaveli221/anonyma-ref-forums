@@ -6,18 +6,27 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-@SpringBootApplication
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+@EnableSwagger2
 @EnableWebMvc
+@SpringBootApplication
 public class AnonymasnApplication implements WebMvcConfigurer {
 
 	@Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-			if (!registry.hasMappingForPattern("/images/**")) {
-				registry
-          .addResourceHandler("/images/**")
-          .addResourceLocations("classpath:/public/images/");
-			} 
-    }
+  public void addResourceHandlers(ResourceHandlerRegistry registry) {
+		if (!registry.hasMappingForPattern("/images/**")) {
+			registry
+				.addResourceHandler("/images/**")
+				.addResourceLocations("classpath:/public/images/");
+		}
+
+		registry.addResourceHandler("swagger-ui.html")
+			.addResourceLocations("classpath:/META-INF/resources/");
+
+		registry.addResourceHandler("/webjars/**")
+			.addResourceLocations("classpath:/META-INF/resources/webjars/");
+  }
 
 	public static void main(String[] args) {
 		SpringApplication.run(AnonymasnApplication.class, args);

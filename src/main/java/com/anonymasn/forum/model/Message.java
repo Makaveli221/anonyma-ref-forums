@@ -57,7 +57,8 @@ public class Message {
     this.texte = texte;
     this.validate = false;
     this.published = false;
-		this.createDate = new Date();
+    this.createDate = new Date();
+    this.commentTotal = 0;
   }
   
   public String getId() {

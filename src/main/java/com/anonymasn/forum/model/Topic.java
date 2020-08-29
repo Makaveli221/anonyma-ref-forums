@@ -57,6 +57,9 @@ public class Topic {
 	@Field(value = "createDate")
 	private Date createDate;
 
+	@Field(value = "commentTotal")
+  private long commentTotal;
+
 	public Topic() {
 	}
 
@@ -71,6 +74,7 @@ public class Topic {
 		this.createUser = createUser;
 		this.status = status;
 		this.createDate = new Date();
+		this.commentTotal = 0;
 	}
 
 	public String getId() {
@@ -167,5 +171,13 @@ public class Topic {
 
 	public void setCreateDate(Date createDate) {
 		this.createDate = createDate;
+	}
+
+	public long getCommentTotal() {
+		return this.commentTotal;
+	}
+
+	public void setCommentTotal(long commentTotal) {
+		this.commentTotal = commentTotal;
 	}
 }

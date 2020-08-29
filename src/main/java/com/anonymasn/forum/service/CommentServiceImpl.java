@@ -43,13 +43,19 @@ public class CommentServiceImpl implements CommentService {
 
     Comment comment = new Comment(commRequest.getMessage());
 
+    long commentTotal = 0L;
+
     switch (commRequest.getSource()) {
       case "topic":
         Optional<Topic> topic = topicDao.findById(commRequest.getIdSource());
         if(!topic.isPresent()) {
           return null;
         }
-        comment.setTopic(topic.get());
+        Topic top = topic.get();
+        commentTotal = top.getCommentTotal() + 1;
+        top.setCommentTotal(commentTotal);
+        topicDao.save(top);
+        comment.setTopic(top);
         break;
 
       case "histoire":
@@ -58,7 +64,7 @@ public class CommentServiceImpl implements CommentService {
           return null;
         }
         Message hist = histoire.get();
-        long commentTotal = hist.getCommentTotal() + 1;
+        commentTotal = hist.getCommentTotal() + 1;
         hist.setCommentTotal(commentTotal);
         messageDao.save(hist);
         comment.setHistoire(hist);

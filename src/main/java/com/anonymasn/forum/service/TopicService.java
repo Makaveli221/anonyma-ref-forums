@@ -21,6 +21,8 @@ public interface TopicService {
 
   public Page<Topic> findByCreateUser(String id, int page, int limit);
 
+  public Page<Topic> findBySubjectAndStatus(final String key, final int status, final int page, final int size);
+
   public Optional<Topic> findByKey(String id);
 
   public Topic update(String id, TopicRequest subRequest, Optional<MultipartFile> file);

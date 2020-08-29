@@ -71,6 +71,20 @@ public class TopicController {
 		return ResponseEntity.status(HttpStatus.OK).body(topics);
 	}
 
+	@GetMapping("/subject/{key}/publisheds")
+	public ResponseEntity<?> AllTopicPublicBySubject(@PathVariable(value = "key") String key, @RequestParam Map<String, String> customQuery) {
+		int page = 0;
+		int limit = 10;
+		if(customQuery.containsKey("page")) {
+			page = Integer.parseInt(customQuery.get("page"));
+		}
+		if(customQuery.containsKey("limit")) {
+			limit = Integer.parseInt(customQuery.get("limit"));
+		}
+		Page<Topic> topics = topicService.findBySubjectAndStatus(key, 1, page, limit);
+		return ResponseEntity.status(HttpStatus.OK).body(topics);
+	}
+
 	@GetMapping("/createuser/{id}")
 	public ResponseEntity<?> AllTopicByCreateUser(@PathVariable(value = "id") String id, @RequestParam Map<String, String> customQuery) {
 		int page = 0;
@@ -176,6 +190,12 @@ public class TopicController {
 		}
 		commentService.delete(currComm.get().getId());
 		return ResponseEntity.status(HttpStatus.OK).body(new MessageResponse("Comment delete successfully"));
+	}
+
+	@GetMapping("/{id}/comments/count")
+	public ResponseEntity<?> countComments(@PathVariable(value = "id") String id) {
+		Collection<Comment> comments = commentService.findByTopic(id);
+		return ResponseEntity.status(HttpStatus.OK).body(comments.stream().count());
 	}
 
 	@PutMapping("/{key}/like/add/{action}")

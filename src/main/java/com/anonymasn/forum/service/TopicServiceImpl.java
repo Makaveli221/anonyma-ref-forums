@@ -116,6 +116,20 @@ public class TopicServiceImpl implements TopicService {
   }
 
   @Override
+  public Page<Topic> findBySubjectAndStatus(final String key, final int status, final int page, final int size) {
+    final Optional<Subject> subject = subjectDao.findByKey(key);
+    if (!subject.isPresent()) {
+			return null;
+    }
+    int customSize = size;
+    if (size == -1) {
+      customSize = Integer.MAX_VALUE;
+    }
+    final Pageable pageable = PageRequest.of(page, customSize, Sort.by(Order.desc("id")));
+    return topicDao.findBySubjectAndStatus(subject.get(), status, pageable);
+  }
+
+  @Override
   public Optional<Topic> findByKey(final String key) {
     return topicDao.findByKey(key);
   }
